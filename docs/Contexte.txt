@@ -1,0 +1,417 @@
+# 📋 Contexte du Projet TeamSphere
+
+## 🎯 Vue d'ensemble du projet
+
+**Nom** : TeamSphere  
+**Description** : Application web de gestion multi-clubs d'équipes sportives  
+**Inspiré de** : MyCoachPro  
+**Type** : Application SaaS pour clubs sportifs (Rugby principalement, extensible à d'autres sports)
+
+---
+
+## 👤 Informations du Développeur
+
+**Nom** : Raphaël Bouillet  
+**Localisation** : Gif-sur-Yvette, Île-de-France, France  
+**Système** : Windows  
+**Outils** : Git GUI, VS Code, GitHub
+
+---
+
+## 🏗️ Stack Technique
+
+### Frontend
+- **React 18** avec Vite
+- **Tailwind CSS** pour le styling
+- **React Router** pour la navigation
+- **Context API** pour le state management
+
+### Backend
+- **Firebase** (BaaS)
+  - Authentication (Email/Password)
+  - Firestore (base de données NoSQL)
+  - Hosting
+  - Cloud Functions (futur)
+
+### Outils de développement
+- **Git** + **Git GUI** pour le versioning
+- **GitHub** pour le repository
+- **GitHub Actions** pour CI/CD
+- **ESLint** + **Prettier** pour le code quality
+
+---
+
+## 📁 Structure du Repository
+```
+teamsphere/
+├── .github/
+│   ├── workflows/
+│   │   ├── ci.yml
+│   │   └── deploy.yml
+│   ├── ISSUE_TEMPLATE/
+│   │   ├── bug_report.md
+│   │   ├── feature_request.md
+│   │   └── question.md
+│   └── PULL_REQUEST_TEMPLATE.md
+├── docs/
+│   ├── architecture/
+│   │   ├── overview.md
+│   │   └── database-schema.md
+│   ├── api/
+│   │   ├── firebase-services.md
+│   │   └── security-rules.md
+│   ├── guides/
+│   │   ├── getting-started.md
+│   │   ├── admin-guide.md
+│   │   ├── coach-guide.md
+│   │   └── developer-guide.md
+│   ├── faq/
+│   │   ├── client-faq.md
+│   │   └── technical-faq.md
+│   ├── roadmap/
+│   │   └── roadmap.md
+│   └── README.md
+├── src/
+├── public/
+├── .gitignore
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── LICENSE
+└── README.md
+```
+
+---
+
+## 🗄️ Architecture de Base de Données (Firestore)
+
+### Collections principales
+
+1. **users** : Profils utilisateurs
+2. **clubs** : Clubs sportifs
+3. **memberships** : Appartenances user ↔ club avec rôles
+4. **teams** : Équipes
+5. **players** : Joueurs
+6. **matches** : Matchs
+7. **attendances** : Présences
+8. **exercises** : Exercices d'entraînement
+9. **messages** : Communication
+
+### Rôles utilisateurs
+
+- **Admin** : Tous les droits (gérer club, équipes, membres)
+- **Coach** : Gérer ses équipes, joueurs, matchs
+- **Player** : Voir son équipe, son profil, le calendrier
+- **Viewer** : Consultation uniquement
+
+---
+
+## 🗺️ Roadmap - 3 Phases
+
+### Phase 1 : MVP (Mois 1-2) ✅ EN COURS
+- [x] Configuration GitHub complète
+- [x] Documentation complète
+- [x] GitHub Projects configuré
+- [ ] Setup projet React + Firebase
+- [ ] Authentification (Login/Register)
+- [ ] Dashboard multi-clubs
+- [ ] Gestion des équipes
+- [ ] Gestion des joueurs
+- [ ] Calendrier des matchs
+
+### Phase 2 : Fonctionnalités Avancées (Mois 3-4)
+- [ ] Statistiques joueurs
+- [ ] Gestion des présences
+- [ ] Notifications
+- [ ] Export de données
+- [ ] Exercices et entraînements
+- [ ] Bibliothèque d'exercices
+
+### Phase 3 : Application Mobile (Mois 5-6)
+- [ ] Application React Native
+- [ ] Synchronisation web ↔ mobile
+- [ ] Push notifications
+- [ ] Mode offline
+- [ ] Appareil photo pour photos d'équipe
+
+---
+
+## 🎯 Fonctionnalités Principales
+
+### Multi-tenant
+Un utilisateur peut être membre de plusieurs clubs avec des rôles différents :
+```
+User (Raphaël)
+  ├── Club A (Rugby Giffois) - Role: Admin
+  │   ├── Équipe Seniors - Role: Admin
+  │   └── Équipe Juniors - Role: Admin
+  └── Club B (AS Palaiseau) - Role: Coach
+      └── Équipe U18 - Role: Coach
+```
+
+### Gestion des clubs (Admin)
+- Créer/modifier/supprimer un club
+- Inviter des membres avec rôles
+- Gérer les paramètres du club
+- Voir les statistiques globales
+
+### Gestion des équipes (Coach)
+- Créer/modifier des équipes
+- Ajouter/modifier des joueurs
+- Créer des matchs
+- Composer les équipes
+- Enregistrer les résultats
+- Suivre les présences
+- Voir les statistiques
+
+### Gestion des joueurs
+- Fiche complète (infos perso, médicales)
+- Statistiques (essais, placages, présences)
+- Historique des matchs
+- Photo de profil
+
+### Calendrier
+- Vue mensuelle/hebdomadaire
+- Création de matchs
+- Entraînements
+- Disponibilités (sondages)
+
+---
+
+## 📊 GitHub Project
+
+**Nom** : TeamSphere Roadmap  
+**Type** : Board (Kanban)  
+**URL** : https://github.com/rboui/teamsphere/projects/1
+
+### Colonnes
+1. 📋 **Backlog** : Idées futures
+2. 📝 **Todo** : Prêt à démarrer
+3. 🚧 **In Progress** : En développement
+4. 👀 **In Review** : En code review
+5. ✅ **Done** : Terminé
+6. 🚀 **Released** : Déployé en production
+
+### Champs personnalisés
+- **Priority** : High (🔴), Medium (🟠), Low (🟢)
+- **Phase** : MVP, Advanced, Mobile
+
+---
+
+## 🔧 Configuration Git
+
+### Repository GitHub
+- **URL** : https://github.com/rboui/teamsphere
+- **Visibilité** : Private
+- **Branches** :
+  - `main` : Production
+  - `develop` : Développement (à créer)
+  - `feature/*` : Nouvelles fonctionnalités
+
+### Git GUI
+- **Outil principal** : Git GUI (interface graphique)
+- **Token GitHub** : Configuré avec permissions `repo` + `workflow`
+- **Credential Manager** : Windows (wincred)
+
+### Conventions de commit
+```
+feat:     Nouvelle fonctionnalité
+fix:      Correction de bug
+docs:     Documentation
+style:    Formatage
+refactor: Refactoring
+test:     Tests
+chore:    Maintenance
+```
+
+---
+
+## 🔐 Firebase Configuration
+
+### Collections Firestore
+Voir `docs/architecture/database-schema.md`
+
+### Security Rules
+- Isolation par club (un user ne voit que ses clubs)
+- Rôles respectés (admin, coach, player, viewer)
+- Validation des données côté serveur
+- Voir `docs/api/security-rules.md`
+
+### Authentication
+- Email/Password activé
+- Création automatique du profil user
+- Gestion des sessions
+
+---
+
+## 🎨 UI/UX Inspirations
+
+### Référence : MyCoachPro
+- Dashboard avec logo club centré
+- Navigation latérale sombre
+- Cartes pour les widgets (Anniversaires, Post-it, Calendrier)
+- Design moderne et épuré
+- Responsive
+
+### Couleurs (à définir)
+- Couleur principale : À définir selon le club
+- Thème sombre pour la navigation
+- Backgrounds clairs pour le contenu
+
+---
+
+## 📝 État Actuel du Projet
+
+### ✅ Complété
+1. Configuration Git et GitHub
+2. Structure complète du repository
+3. Documentation exhaustive (11 fichiers de docs)
+4. Templates d'issues et PR
+5. GitHub Actions (CI/CD)
+6. GitHub Project (Roadmap)
+7. Commits initiaux pushés
+
+### 🚧 En cours
+- Phase 1 : MVP
+- Développement de l'application React
+
+### 📅 À venir
+- Configuration Firebase
+- Développement des composants
+- Tests
+- Déploiement
+
+---
+
+## 🔗 Liens Importants
+
+- **Repository** : https://github.com/rboui/teamsphere
+- **Projects** : https://github.com/rboui/teamsphere/projects
+- **Issues** : https://github.com/rboui/teamsphere/issues
+- **Actions** : https://github.com/rboui/teamsphere/actions
+- **Firebase Console** : https://console.firebase.google.com (à configurer)
+
+---
+
+## 📞 Contexte des Discussions
+
+### Discussion 1 : Configuration GitHub ✅ TERMINÉE
+- Setup Git + Git GUI
+- Création du repository
+- Structure complète du projet
+- Documentation exhaustive
+- GitHub Projects (Roadmap)
+
+### Discussion 2 : Développement Frontend (À VENIR)
+- Setup projet React + Vite
+- Configuration Firebase
+- Création des composants
+- Context API
+- Routing
+
+### Discussion 3 : Développement Backend + Features (À VENIR)
+- Services Firebase
+- Security Rules
+- Gestion des clubs, équipes, joueurs
+- Authentification
+- Tests
+
+---
+
+## 💡 Notes Importantes
+
+### Workflow de travail
+1. Toujours travailler sur une branche `feature/*`
+2. Faire des commits réguliers avec des messages clairs
+3. Tester en local avant de push
+4. Créer une PR pour review
+5. Merger dans `develop` puis `main`
+
+### Bonnes pratiques
+- Commiter souvent avec des messages descriptifs
+- Documenter le code
+- Suivre les conventions de nommage
+- Tester avant de déployer
+- Mettre à jour la documentation
+
+### Commandes Git courantes (Git GUI)
+- **F5** : Rescan (voir les changements)
+- **Ctrl+T** : Stage All (préparer tous les fichiers)
+- **Ctrl+Enter** : Commit
+- **Remote → Push** : Envoyer sur GitHub
+
+---
+
+## 🎯 Objectifs par Phase
+
+### Phase 1 (MVP) - Objectif : Application fonctionnelle
+- Authentification complète
+- Gestion multi-clubs opérationnelle
+- CRUD complet pour équipes et joueurs
+- Calendrier de matchs fonctionnel
+- Interface responsive
+
+### Phase 2 (Advanced) - Objectif : Expérience enrichie
+- Statistiques détaillées et graphiques
+- Système de présences complet
+- Notifications en temps réel
+- Export de données
+- Bibliothèque d'exercices
+
+### Phase 3 (Mobile) - Objectif : Mobilité
+- Application native iOS/Android
+- Synchronisation offline
+- Push notifications
+- Accès caméra
+- Optimisation mobile
+
+---
+
+## 📚 Documentation Clés à Consulter
+
+Pour les développeurs qui rejoignent le projet :
+
+1. **Démarrage** : `docs/guides/getting-started.md`
+2. **Architecture** : `docs/architecture/overview.md`
+3. **Base de données** : `docs/architecture/database-schema.md`
+4. **Services API** : `docs/api/firebase-services.md`
+5. **Sécurité** : `docs/api/security-rules.md`
+6. **Contribution** : `CONTRIBUTING.md`
+
+Pour les utilisateurs :
+
+1. **Guide Admin** : `docs/guides/admin-guide.md`
+2. **Guide Coach** : `docs/guides/coach-guide.md`
+3. **FAQ** : `docs/faq/client-faq.md`
+
+---
+
+## 🎓 Compétences Acquises
+
+### Raphaël maîtrise maintenant :
+- ✅ Git et Git GUI (versioning)
+- ✅ GitHub (repos, issues, projects, actions)
+- ✅ Structure de projet professionnelle
+- ✅ Documentation technique complète
+- ✅ Workflow de développement collaboratif
+- ✅ CI/CD avec GitHub Actions
+- ✅ Gestion de projet Agile (Kanban)
+
+---
+
+## 📅 Historique
+
+- **15 Oct 2025** : Discussion 1 - Configuration GitHub complète ✅
+- **À venir** : Discussion 2 - Développement Frontend
+- **À venir** : Discussion 3 - Backend + Features avancées
+
+---
+
+## 🚀 Prêt pour la Suite !
+
+Ce contexte contient toutes les informations nécessaires pour continuer le développement dans les prochaines discussions. Partagez ce fichier au début de chaque nouvelle session pour que l'assistant ait tout le contexte !
+
+---
+
+**Dernière mise à jour** : 15 octobre 2025  
+**Version du contexte** : 1.0  
+**Statut du projet** : Phase 1 - MVP en cours
