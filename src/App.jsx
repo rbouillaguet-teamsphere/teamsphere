@@ -33,9 +33,12 @@ function Button({ onClick, children, variant = 'primary', size = 'md', icon, dis
   );
 }
 
-function Card({ title, children, actions, className = "" }) {
+function Card({ title, children, actions, className = "", onClick }) {
   return (
-    <div className={`bg-white rounded-xl shadow-md p-5 ${className}`}>
+    <div 
+      className={`bg-white rounded-xl shadow-md p-5 ${className}`}
+      onClick={onClick}
+    >
       {title && (
         <div className="flex justify-between items-center mb-4 pb-3 border-b">
           <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
@@ -598,6 +601,318 @@ function DashboardPage() {
   );
 }
 
+function PlayersPage() {
+  const { players, setSelectedPlayer, hasPermission, selectedTeam } = useApp();
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">Gestion des joueurs</h1>
+          <p className="text-gray-600 mt-1">
+            {selectedTeam?.name} • {players.length} joueur{players.length > 1 ? 's' : ''}
+          </p>
+        </div>
+        {hasPermission('write') && (
+          <Button icon="➕" onClick={() => alert('Ajouter un joueur - À implémenter')}>
+            Ajouter un joueur
+          </Button>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {players.length === 0 ? (
+          <Card className="col-span-full">
+            <div className="text-center py-12 text-gray-500">
+              <p className="text-6xl mb-4">👥</p>
+              <p className="text-xl font-semibold mb-2">Aucun joueur</p>
+              <p className="text-gray-600 mb-4">Commencez par ajouter des joueurs à cette équipe</p>
+              {hasPermission('write') && (
+                <Button onClick={() => alert('Ajouter un joueur - À implémenter')}>
+                  Ajouter le premier joueur
+                </Button>
+              )}
+            </div>
+          </Card>
+        ) : (
+          players.map(player => (
+            <Card 
+              key={player.id} 
+              className="hover:shadow-lg transition-all cursor-pointer"
+              onClick={() => setSelectedPlayer(player)}
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-md">
+                  {player.name?.split(' ').map(n => n[0]).join('') || '??'}
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-lg text-gray-800">{player.name}</h3>
+                  <p className="text-sm text-gray-600">{player.position}</p>
+                  {player.jerseyNumber && (
+                    <p className="text-xs text-gray-500">N° {player.jerseyNumber}</p>
+                  )}
+                </div>
+                <Badge variant={player.status === 'active' ? 'success' : 'warning'}>
+                  {player.status === 'active' ? 'Actif' : 'Blessé'}
+                </Badge>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2 pt-3 border-t">
+                <div className="text-center">
+                  <p className="text-xs text-gray-600">Essais</p>
+                  <p className="text-lg font-bold text-blue-600">{player.stats?.tries || 0}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-gray-600">Placages</p>
+                  <p className="text-lg font-bold text-green-600">{player.stats?.tackles || 0}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-gray-600">Présence</p>
+                  <p className="text-lg font-bold text-purple-600">{player.stats?.attendance || 0}%</p>
+                </div>
+              </div>
+            </Card>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CalendarPage() {
+  const { matches, selectedTeam, hasPermission } = useApp();
+
+  const upcomingMatches = matches.filter(m => m.status === 'upcoming');
+  const pastMatches = matches.filter(m => m.status === 'finished');
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">Calendrier</h1>
+          <p className="text-gray-600 mt-1">
+            {selectedTeam?.name} • {matches.length} match{matches.length > 1 ? 's' : ''}
+          </p>
+        </div>
+        {hasPermission('write') && (
+          <Button icon="➕" onClick={() => alert('Ajouter un match - À implémenter')}>
+            Ajouter un match
+          </Button>
+        )}
+      </div>
+
+      {/* Matchs à venir */}
+      <div>
+        <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <span>🔜</span>
+          Matchs à venir ({upcomingMatches.length})
+        </h2>
+        
+        {upcomingMatches.length === 0 ? (
+          <Card>
+            <div className="text-center py-8 text-gray-500">
+              <p className="text-4xl mb-2">📅</p>
+              <p>Aucun match prévu</p>
+            </div>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {upcomingMatches.map(match => (
+              <Card key={match.id} className="hover:shadow-lg transition-all">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-gray-800 mb-1">
+                      {match.opponent}
+                    </h3>
+                    <p className="text-sm text-gray-600 flex items-center gap-2">
+                      <span>📍</span>
+                      {match.location} {match.venue && `• ${match.venue}`}
+                    </p>
+                  </div>
+                  <Badge variant="info">À venir</Badge>
+                </div>
+
+                <div className="flex items-center gap-4 pt-3 border-t">
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <span>📅</span>
+                    <span className="font-medium">{match.date}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <span>🕐</span>
+                    <span className="font-medium">{match.time}</span>
+                  </div>
+                </div>
+
+                {hasPermission('write') && (
+                  <div className="mt-4 flex gap-2">
+                    <Button size="sm" variant="secondary" className="flex-1">
+                      Modifier
+                    </Button>
+                    <Button size="sm" variant="ghost" className="flex-1">
+                      Voir détails
+                    </Button>
+                  </div>
+                )}
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Matchs passés */}
+      {pastMatches.length > 0 && (
+        <div>
+          <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <span>✅</span>
+            Matchs terminés ({pastMatches.length})
+          </h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {pastMatches.map(match => (
+              <Card key={match.id} className="opacity-75">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-lg font-bold text-gray-800">
+                    {match.opponent}
+                  </h3>
+                  <Badge variant="default">Terminé</Badge>
+                </div>
+                <p className="text-sm text-gray-600 mb-2">{match.date}</p>
+                {match.scoreHome !== null && match.scoreAway !== null && (
+                  <div className="text-2xl font-bold text-center py-2 bg-gray-50 rounded">
+                    {match.scoreHome} - {match.scoreAway}
+                  </div>
+                )}
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StatisticsPage() {
+  const { players, matches, selectedTeam } = useApp();
+
+  const totalTries = players.reduce((sum, p) => sum + (p.stats?.tries || 0), 0);
+  const totalTackles = players.reduce((sum, p) => sum + (p.stats?.tackles || 0), 0);
+  const avgAttendance = Math.round(
+    players.reduce((sum, p) => sum + (p.stats?.attendance || 0), 0) / (players.length || 1)
+  );
+
+  const topScorers = [...players]
+    .sort((a, b) => (b.stats?.tries || 0) - (a.stats?.tries || 0))
+    .slice(0, 5);
+
+  const topTacklers = [...players]
+    .sort((a, b) => (b.stats?.tackles || 0) - (a.stats?.tackles || 0))
+    .slice(0, 5);
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-800">Statistiques</h1>
+        <p className="text-gray-600 mt-1">{selectedTeam?.name} • Saison 2024-2025</p>
+      </div>
+
+      {/* Stats globales */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="text-center">
+          <div className="text-4xl mb-2">👥</div>
+          <p className="text-3xl font-bold text-blue-600">{players.length}</p>
+          <p className="text-sm text-gray-600">Joueurs</p>
+        </Card>
+        <Card className="text-center">
+          <div className="text-4xl mb-2">🏉</div>
+          <p className="text-3xl font-bold text-green-600">{totalTries}</p>
+          <p className="text-sm text-gray-600">Essais marqués</p>
+        </Card>
+        <Card className="text-center">
+          <div className="text-4xl mb-2">💪</div>
+          <p className="text-3xl font-bold text-purple-600">{totalTackles}</p>
+          <p className="text-sm text-gray-600">Placages</p>
+        </Card>
+        <Card className="text-center">
+          <div className="text-4xl mb-2">📊</div>
+          <p className="text-3xl font-bold text-orange-600">{avgAttendance}%</p>
+          <p className="text-sm text-gray-600">Présence moyenne</p>
+        </Card>
+      </div>
+
+      {/* Top scorers et tacklers */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Meilleurs marqueurs */}
+        <Card title="🏆 Meilleurs marqueurs">
+          <div className="space-y-3">
+            {topScorers.map((player, index) => (
+              <div key={player.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    {index + 1}
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-800">{player.name}</p>
+                    <p className="text-xs text-gray-500">{player.position}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-blue-600">{player.stats?.tries || 0}</p>
+                  <p className="text-xs text-gray-500">essais</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Meilleurs plaqueurs */}
+        <Card title="💪 Meilleurs plaqueurs">
+          <div className="space-y-3">
+            {topTacklers.map((player, index) => (
+              <div key={player.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    {index + 1}
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-800">{player.name}</p>
+                    <p className="text-xs text-gray-500">{player.position}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-green-600">{player.stats?.tackles || 0}</p>
+                  <p className="text-xs text-gray-500">placages</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      {/* Résumé matchs */}
+      <Card title="📅 Résumé de la saison">
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center p-4 bg-blue-50 rounded-lg">
+            <p className="text-3xl font-bold text-blue-600">{matches.length}</p>
+            <p className="text-sm text-gray-600">Total matchs</p>
+          </div>
+          <div className="text-center p-4 bg-green-50 rounded-lg">
+            <p className="text-3xl font-bold text-green-600">
+              {matches.filter(m => m.status === 'upcoming').length}
+            </p>
+            <p className="text-sm text-gray-600">À venir</p>
+          </div>
+          <div className="text-center p-4 bg-gray-50 rounded-lg">
+            <p className="text-3xl font-bold text-gray-600">
+              {matches.filter(m => m.status === 'finished').length}
+            </p>
+            <p className="text-sm text-gray-600">Terminés</p>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+}
+
 // ============================================
 // 🎬 MAIN APP
 // ============================================
@@ -625,6 +940,12 @@ function AppContent() {
   // Authenticated - Main app
   const renderView = () => {
     switch (currentView) {
+      case 'players':
+        return <PlayersPage />;
+      case 'calendar':
+        return <CalendarPage />;
+      case 'stats':
+        return <StatisticsPage />;
       default:
         return <DashboardPage />;
     }
