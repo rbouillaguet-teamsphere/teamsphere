@@ -17,7 +17,7 @@ export function AppProvider({ children }) {
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [authChecked, setAuthChecked] = useState(false);
-
+  
   // Clubs & Teams state
   const [clubs, setClubs] = useState([]);
   const [selectedClubId, setSelectedClubId] = useState(null);
@@ -203,6 +203,84 @@ export function AppProvider({ children }) {
     }
   };
 
+  // Signup
+  const signup = async (email, password, name) => {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    
+    const user = userCredential.user;
+    
+    await setDoc(doc(db, 'users', user.uid), {
+      email: user.email,
+      name: name,
+      createdAt: serverTimestamp(),
+      onboarding: {
+        completed: false,
+        startedAt: serverTimestamp(),
+      },
+    });
+    
+    return user;
+  } catch (error) {
+    console.error('Signup error:', error);
+    throw new Error(error.message);
+  }
+};
+
+const completeOnboarding = async (onboardingData) => {
+  console.log('👤 currentUser:', currentUser);  // ⬅️ AJOUTER CETTE LIGNE
+  console.log('👤 currentUser.uid:', currentUser?.uid);  // ⬅️ ET CELLE-CI
+  if (!currentUser) {
+    throw new Error('Utilisateur non connecté');
+  }
+
+  try {
+    console.log('🚀 Onboarding data:', onboardingData);
+
+console.log('📝 Création du club avec userId:', currentUser.uid);
+    
+    // 1. Créer le club avec clubService
+    const clubId = await clubService.createClub({
+      name: onboardingData.club.name,
+      sport: onboardingData.club.sport,
+      city: onboardingData.club.city,
+      ownerId: currentUser.uid,
+    }, currentUser.uid);
+    
+    // 2. Créer l'équipe avec teamService
+    const teamId = await teamService.createTeam(clubId, {
+      name: onboardingData.team.name,
+      category: onboardingData.team.category,
+      gender: onboardingData.team.gender,
+      season: onboardingData.team.season,
+    });
+    
+    // 3. Ajouter les joueurs
+    if (onboardingData.players?.length > 0) {
+      for (const player of onboardingData.players) {
+        await playerService.addPlayer(clubId, teamId, player);
+      }
+    }
+    
+    // 4. Marquer l'onboarding comme terminé
+    await userService.updateProfile(currentUser.uid, {
+      'onboarding.completed': true,
+      'onboarding.completedAt': new Date(),
+    });
+    
+    console.log('✅ Onboarding terminé !');
+    window.location.href = '/dashboard';
+
+  } catch (error) {
+    console.error('❌ Erreur onboarding:', error);
+    throw error;
+  }
+};
+
   const value = {
     // User
     currentUser,
@@ -212,7 +290,9 @@ export function AppProvider({ children }) {
     login,
     register,
     logout,
-    
+    signup: authService.register,
+    completeOnboarding,
+
     // Permissions
     userMembership,
     hasPermission,
@@ -247,6 +327,7 @@ export function AppProvider({ children }) {
     teamService,
     playerService,
     matchService,
+    completeOnboarding,
   };
 
   return (
@@ -263,3 +344,39 @@ export function useApp() {
   }
   return context;
 }
+
+const completeOnboarding = async (onboardingData) => {
+    try {
+      // 1. Créer le club
+      const clubId = await createClub(onboardingData.club);
+      
+      // 2. Créer l'équipe
+      const teamId = await createTeam(clubId, onboardingData.team);
+      
+      // 3. Ajouter les joueurs
+      if (onboardingData.players?.length) {
+        for (const player of onboardingData.players) {
+          await addPlayer(clubId, teamId, player);
+        }
+      }
+      
+      // 4. Envoyer les invitations
+      if (onboardingData.invites?.length) {
+        // TODO: Implémenter sendInvitations
+        // await sendInvitations(clubId, onboardingData.invites);
+      }
+      
+      // 5. Marquer l'onboarding comme terminé
+      await updateDoc(doc(db, 'users', currentUser.uid), {
+        'onboarding.completed': true,
+        'onboarding.completedAt': serverTimestamp(),
+      });
+      
+      // 6. Rediriger vers le dashboard
+      navigate('/dashboard');
+      
+    } catch (error) {
+      console.error('Error completing onboarding:', error);
+      throw error;
+    }
+  };

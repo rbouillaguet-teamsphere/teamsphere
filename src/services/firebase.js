@@ -44,6 +44,31 @@ export const db = getFirestore(app);
 // 🔐 AUTH SERVICES
 // ============================================
 export const authService = {
+  
+// Fonction de signup
+  signup: async (email, password, name) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      // Créer le profil utilisateur dans Firestore
+      await setDoc(doc(db, 'users', user.uid), {
+        email: user.email,
+        name: name,
+        createdAt: serverTimestamp(),
+        onboarding: {
+          completed: false,
+          startedAt: serverTimestamp(),
+        },
+      });
+      
+      return user;
+    } catch (error) {
+      console.error('Signup error:', error);
+      throw error;
+    }
+  },
+
   // Login
   login: (email, password) => 
     signInWithEmailAndPassword(auth, email, password),
@@ -126,6 +151,11 @@ export const clubService = {
     return clubRef.id;
   },
   
+  // Alias pour createClub (plus parlant)
+  createClub: async (clubData, userId) => {
+    return clubService.create(clubData, userId);
+  },
+  
   // Récupérer un club
   get: async (clubId) => {
     const docSnap = await getDoc(doc(db, 'clubs', clubId));
@@ -193,6 +223,11 @@ export const teamService = {
     );
     return teamRef.id;
   },
+
+  // Alias pour createTeam
+  createTeam: async (clubId, teamData) => {
+    return teamService.create(clubId, teamData);
+  },
   
   // Récupérer toutes les équipes d'un club
   getAll: async (clubId) => {
@@ -255,6 +290,11 @@ export const playerService = {
     return playerRef.id;
   },
   
+  // Alias pour addPlayer
+  addPlayer: async (clubId, teamId, playerData) => {
+    return playerService.create(clubId, teamId, playerData);
+  },
+
   // Récupérer tous les joueurs d'une équipe
   getAll: async (clubId, teamId) => {
     const snapshot = await getDocs(
@@ -362,3 +402,66 @@ export const matchService = {
     );
   },
 };
+/**
+ * Créer un nouveau compte utilisateur
+ */
+export async function signup(email, password, name) {
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    
+    const user = userCredential.user;
+    
+    await setDoc(doc(db, 'users', user.uid), {
+      email: user.email,
+      name: name,
+      createdAt: serverTimestamp(),
+      onboarding: {
+        completed: false,
+        startedAt: serverTimestamp(),
+      },
+    });
+    
+    console.log('✅ Utilisateur créé:', user.uid);
+    return user;
+    
+  } catch (error) {
+    console.error('❌ Erreur signup:', error);
+    
+    let errorMessage = error.message;
+    if (error.code === 'auth/email-already-in-use') {
+      errorMessage = 'Cet email est déjà utilisé';
+    } else if (error.code === 'auth/weak-password') {
+      errorMessage = 'Le mot de passe est trop faible';
+    }
+    
+    throw new Error(errorMessage);
+  }
+}
+/**
+ * Envoyer des invitations
+ */
+export async function sendInvitations(clubId, invites) {
+  try {
+    for (const invite of invites) {
+      const inviteId = `${clubId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      await setDoc(doc(db, 'invitations', inviteId), {
+        clubId: clubId,
+        email: invite.email,
+        role: invite.role,
+        status: 'pending',
+        createdAt: serverTimestamp(),
+      });
+    }
+    
+    console.log('✅ Invitations créées:', invites.length);
+    
+  } catch (error) {
+    console.error('❌ Erreur sendInvitations:', error);
+    throw error;
+  }
+}

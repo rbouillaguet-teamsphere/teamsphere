@@ -519,6 +519,7 @@ function CalendarView() {
 
 function ClubSwitcher() {
   const { clubs, selectedClubId, switchClub, showClubSwitcher, setShowClubSwitcher } = useApp();
+  const [showCreateClub, setShowCreateClub] = React.useState(false);
 
   if (!showClubSwitcher) return null;
 
@@ -543,8 +544,8 @@ function ClubSwitcher() {
             <div className="text-center py-8 text-gray-500">
               <p className="text-4xl mb-2">🏢</p>
               <p>Vous n'êtes membre d'aucun club</p>
-              <Button variant="primary" className="mt-4">
-                Créer mon premier club
+              <Button variant="primary" className="mt-4" onClick={() => setShowCreateClub(true)}>
+              Créer mon premier club
               </Button>
             </div>
           ) : (
@@ -576,9 +577,483 @@ function ClubSwitcher() {
           )}
         </div>
       </div>
+      <CreateClubModal
+  isOpen={showCreateClub}
+  onClose={() => setShowCreateClub(false)}
+  onSuccess={() => {
+    setShowClubSwitcher(false);
+    alert('Club créé avec succès !');
+  }}
+/>
     </div>
   );
 }
+
+
+// ============================================
+// 📝 FORMULAIRES
+// ============================================
+
+function AddPlayerModal({ isOpen, onClose, onSuccess }) {
+  const { selectedClubId, selectedTeamId, playerService } = useApp();
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState('');
+
+  const [formData, setFormData] = React.useState({
+    name: '',
+    position: '',
+    jerseyNumber: '',
+    birthDate: '',
+    status: 'active'
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      // Validation
+      if (!formData.name || !formData.position) {
+        throw new Error('Le nom et le poste sont obligatoires');
+      }
+
+      // Créer le joueur dans Firestore
+      await playerService.create(selectedClubId, selectedTeamId, {
+        name: formData.name,
+        position: formData.position,
+        jerseyNumber: formData.jerseyNumber ? parseInt(formData.jerseyNumber) : null,
+        birthDate: formData.birthDate || null,
+        status: formData.status,
+        stats: {
+          tries: 0,
+          tackles: 0,
+          attendance: 0
+        }
+      });
+
+      // Succès
+      onSuccess?.();
+      onClose();
+      
+      // Reset form
+      setFormData({
+        name: '',
+        position: '',
+        jerseyNumber: '',
+        birthDate: '',
+        status: 'active'
+      });
+
+    } catch (err) {
+      setError(err.message || 'Erreur lors de l\'ajout du joueur');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="Ajouter un joueur">
+      <form onSubmit={handleSubmit}>
+        <Input
+          label="Nom complet *"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          placeholder="Jean Dupont"
+          required
+        />
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Poste *
+          </label>
+          <select
+            name="position"
+            value={formData.position}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="">Sélectionner un poste</option>
+            <option value="Pilier">Pilier</option>
+            <option value="Talonneur">Talonneur</option>
+            <option value="Deuxième ligne">Deuxième ligne</option>
+            <option value="Troisième ligne">Troisième ligne</option>
+            <option value="Demi de mêlée">Demi de mêlée</option>
+            <option value="Demi d'ouverture">Demi d'ouverture</option>
+            <option value="Centre">Centre</option>
+            <option value="Ailier">Ailier</option>
+            <option value="Arrière">Arrière</option>
+          </select>
+        </div>
+
+        <Input
+          label="Numéro de maillot"
+          name="jerseyNumber"
+          type="number"
+          value={formData.jerseyNumber}
+          onChange={handleChange}
+          placeholder="10"
+          min="1"
+          max="99"
+        />
+
+        <Input
+          label="Date de naissance"
+          name="birthDate"
+          type="date"
+          value={formData.birthDate}
+          onChange={handleChange}
+        />
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Statut
+          </label>
+          <select
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="active">Actif</option>
+            <option value="injured">Blessé</option>
+            <option value="suspended">Suspendu</option>
+          </select>
+        </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
+
+        <div className="flex gap-2">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="flex-1"
+          >
+            {loading ? 'Ajout en cours...' : 'Ajouter le joueur'}
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onClose}
+            className="flex-1"
+          >
+            Annuler
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+function AddMatchModal({ isOpen, onClose, onSuccess }) {
+  const { selectedClubId, selectedTeamId, matchService } = useApp();
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState('');
+
+  const [formData, setFormData] = React.useState({
+    opponent: '',
+    date: '',
+    time: '',
+    location: 'Domicile',
+    venue: '',
+    status: 'upcoming'
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      // Validation
+      if (!formData.opponent || !formData.date || !formData.time) {
+        throw new Error('L\'adversaire, la date et l\'heure sont obligatoires');
+      }
+
+      // Créer le match dans Firestore
+      await matchService.create(selectedClubId, selectedTeamId, {
+        opponent: formData.opponent,
+        date: formData.date,
+        time: formData.time,
+        location: formData.location,
+        venue: formData.venue || null,
+        status: formData.status,
+        scoreHome: null,
+        scoreAway: null
+      });
+
+      // Succès
+      onSuccess?.();
+      onClose();
+      
+      // Reset form
+      setFormData({
+        opponent: '',
+        date: '',
+        time: '',
+        location: 'Domicile',
+        venue: '',
+        status: 'upcoming'
+      });
+
+    } catch (err) {
+      setError(err.message || 'Erreur lors de l\'ajout du match');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="Ajouter un match">
+      <form onSubmit={handleSubmit}>
+        <Input
+          label="Adversaire *"
+          name="opponent"
+          value={formData.opponent}
+          onChange={handleChange}
+          placeholder="RC Toulon"
+          required
+        />
+
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            label="Date *"
+            name="date"
+            type="date"
+            value={formData.date}
+            onChange={handleChange}
+            required
+          />
+
+          <Input
+            label="Heure *"
+            name="time"
+            type="time"
+            value={formData.time}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Lieu *
+          </label>
+          <select
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="Domicile">Domicile</option>
+            <option value="Extérieur">Extérieur</option>
+            <option value="Neutre">Terrain neutre</option>
+          </select>
+        </div>
+
+        <Input
+          label="Stade / Adresse"
+          name="venue"
+          value={formData.venue}
+          onChange={handleChange}
+          placeholder="Stade Municipal"
+        />
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
+
+        <div className="flex gap-2">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="flex-1"
+          >
+            {loading ? 'Ajout en cours...' : 'Ajouter le match'}
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onClose}
+            className="flex-1"
+          >
+            Annuler
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+function CreateClubModal({ isOpen, onClose, onSuccess }) {
+  const { currentUser, clubService } = useApp();
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState('');
+
+  const [formData, setFormData] = React.useState({
+    name: '',
+    sport: 'Rugby',
+    city: '',
+    logo: '🏉'
+  });
+
+  const logos = ['🏉', '⚽', '🏀', '🏐', '🎾', '⚾', '🏈', '🥊', '🏊'];
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      // Validation
+      if (!formData.name || !formData.sport || !formData.city) {
+        throw new Error('Tous les champs sont obligatoires');
+      }
+
+      // Créer le club dans Firestore
+      await clubService.create(
+        {
+          name: formData.name,
+          sport: formData.sport,
+          city: formData.city,
+          logo: formData.logo,
+          settings: {
+            primaryColor: '#2563eb',
+            accentColor: '#f59e0b'
+          }
+        },
+        currentUser.uid
+      );
+
+      // Succès
+      onSuccess?.();
+      onClose();
+      
+      // Reset form
+      setFormData({
+        name: '',
+        sport: 'Rugby',
+        city: '',
+        logo: '🏉'
+      });
+
+    } catch (err) {
+      setError(err.message || 'Erreur lors de la création du club');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="Créer un club">
+      <form onSubmit={handleSubmit}>
+        <Input
+          label="Nom du club *"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          placeholder="ROC GIFFOIS"
+          required
+        />
+
+        <Input
+          label="Sport *"
+          name="sport"
+          value={formData.sport}
+          onChange={handleChange}
+          placeholder="Rugby"
+          required
+        />
+
+        <Input
+          label="Ville *"
+          name="city"
+          value={formData.city}
+          onChange={handleChange}
+          placeholder="Gif-sur-Yvette"
+          required
+        />
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Logo du club
+          </label>
+          <div className="grid grid-cols-9 gap-2">
+            {logos.map(logo => (
+              <button
+                key={logo}
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, logo }))}
+                className={`text-3xl p-2 rounded-lg border-2 transition-all ${
+                  formData.logo === logo
+                    ? 'border-blue-600 bg-blue-50'
+                    : 'border-gray-200 hover:border-blue-300'
+                }`}
+              >
+                {logo}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
+
+        <div className="flex gap-2">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="flex-1"
+          >
+            {loading ? 'Création...' : 'Créer le club'}
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onClose}
+            className="flex-1"
+          >
+            Annuler
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
 
 // ============================================
 // 📄 PAGES
@@ -603,6 +1078,7 @@ function DashboardPage() {
 
 function PlayersPage() {
   const { players, setSelectedPlayer, hasPermission, selectedTeam } = useApp();
+  const [showAddModal, setShowAddModal] = React.useState(false);
 
   return (
     <div className="space-y-6">
@@ -614,7 +1090,7 @@ function PlayersPage() {
           </p>
         </div>
         {hasPermission('write') && (
-          <Button icon="➕" onClick={() => alert('Ajouter un joueur - À implémenter')}>
+          <Button icon="➕" onClick={() => setShowAddModal(true)}>
             Ajouter un joueur
           </Button>
         )}
@@ -675,12 +1151,21 @@ function PlayersPage() {
           ))
         )}
       </div>
+      {/* Modal d'ajout - ICI, AVANT LA FERMETURE */}
+      <AddPlayerModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSuccess={() => {
+          alert('Joueur ajouté avec succès !');
+        }}
+      />
     </div>
   );
 }
 
 function CalendarPage() {
   const { matches, selectedTeam, hasPermission } = useApp();
+  const [showAddModal, setShowAddModal] = React.useState(false);
 
   const upcomingMatches = matches.filter(m => m.status === 'upcoming');
   const pastMatches = matches.filter(m => m.status === 'finished');
@@ -688,14 +1173,9 @@ function CalendarPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">Calendrier</h1>
-          <p className="text-gray-600 mt-1">
-            {selectedTeam?.name} • {matches.length} match{matches.length > 1 ? 's' : ''}
-          </p>
-        </div>
+        {/* ... */}
         {hasPermission('write') && (
-          <Button icon="➕" onClick={() => alert('Ajouter un match - À implémenter')}>
+          <Button icon="➕" onClick={() => setShowAddModal(true)}>
             Ajouter un match
           </Button>
         )}
@@ -757,6 +1237,14 @@ function CalendarPage() {
             ))}
           </div>
         )}
+        {/* Modal d'ajout */}
+      <AddMatchModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSuccess={() => {
+          alert('Match ajouté avec succès !');
+        }}
+      />
       </div>
 
       {/* Matchs passés */}
