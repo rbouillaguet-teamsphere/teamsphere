@@ -13,8 +13,9 @@ import { OnboardingWizard } from '@/components/onboarding';
 
 // Pages protégées (à créer ou importer depuis App.jsx)
 import DashboardPage from '@/pages/DashboardPage';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 import PlayersPage from '@/pages/PlayersPage';
-// import CalendarPage from '@/pages/CalendarPage';
+import CalendarPage from '@/pages/CalendarPage';
 // import StatisticsPage from '@/pages/StatisticsPage';
 
 /**
@@ -130,14 +131,15 @@ export const router = createBrowserRouter([
   ),
 },
   {
-    path: '/calendar',
-    element: (
-      <ProtectedRoute>
-        {/* TODO: Importer CalendarPage depuis App.jsx */}
-        <div>Calendar - À migrer depuis App.jsx</div>
-      </ProtectedRoute>
-    ),
-  },
+  path: '/calendar',
+  element: (
+    <ProtectedRoute>
+      <DashboardLayout>
+        <CalendarPage />
+      </DashboardLayout>
+    </ProtectedRoute>
+  )
+},
   {
     path: '/statistics',
     element: (

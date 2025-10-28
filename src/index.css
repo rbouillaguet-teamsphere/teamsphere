@@ -1,7 +1,11 @@
+@import './styles/calendar-animations.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ==============================================
+   🌐 STYLES GLOBAUX
+   ============================================== */
 @layer base {
   body {
     @apply bg-gray-50 text-gray-900 antialiased;
@@ -9,20 +13,137 @@
   }
 }
 
+/* ---- Scrollbar ---- */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
-
 ::-webkit-scrollbar-track {
   background: #f1f5f9;
 }
-
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* ==============================================
+   🗓️ MINI CALENDRIER (style ultra épuré)
+   ============================================== */
+.ts-mini-calendar {
+  font-family: 'Inter', sans-serif;
+}
+
+/* --- Suppression complète des bordures et du quadrillage --- */
+.ts-mini-calendar .fc-scrollgrid,
+.ts-mini-calendar .fc-theme-standard td,
+.ts-mini-calendar .fc-theme-standard th,
+.ts-mini-calendar .fc-scrollgrid-section > *,
+.ts-mini-calendar .fc-daygrid-day {
+  border: none !important;
+  background: transparent !important;
+}
+.ts-mini-calendar .fc-scrollgrid {
+  border-collapse: collapse !important;
+}
+.ts-mini-calendar .fc-scrollgrid-sync-table {
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* --- En-tête du mois --- */
+.ts-mini-calendar .fc-toolbar-title {
+  font-size: 1rem !important;
+  font-weight: 600;
+  color: #111827;
+}
+.ts-mini-calendar .fc-col-header {
+  background: none !important;
+  border: none !important;
+}
+.ts-mini-calendar .fc-col-header-cell-cushion {
+  color: #6b7280; /* gray-500 */
+  font-weight: 600;
+  text-transform: none; /* pas de majuscules */
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+}
+
+/* --- Réduction de la hauteur pour un rendu compact --- */
+.ts-mini-calendar .fc-daygrid-day-frame {
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 32px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ts-mini-calendar .fc-daygrid-day-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 6px;
+  font-size: 0.85rem !important;
+  font-weight: 500;
+  color: #374151; /* gray-700 */
+  transition: background 0.15s ease;
+  margin: 0 auto !important;
+}
+
+/* --- État : jour courant --- */
+.ts-mini-calendar .fc-day-today .fc-daygrid-day-number {
+  background-color: #2563eb !important; /* blue-600 */
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+/* --- Effet hover --- */
+.ts-mini-calendar .fc-daygrid-day:hover .fc-daygrid-day-number {
+  background-color: #f3f4f6 !important; /* gray-100 */
+}
+
+/* --- Pastille (point) sous les jours avec match --- */
+.ts-mini-calendar .fc-daygrid-day-events {
+  position: absolute;
+  bottom: 4px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  pointer-events: none;
+}
+.ts-mini-calendar .fc-daygrid-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: #2563eb;
+  border-radius: 50%;
+}
+/* === Supprime complètement le cadre autour des jours === */
+.ts-mini-calendar .fc-daygrid-day {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Supprime le cadre gris résiduel autour des lignes/colonnes */
+.ts-mini-calendar td,
+.ts-mini-calendar th {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Corrige l'effet de "case découpée" */
+.ts-mini-calendar .fc-scrollgrid-sync-table,
+.ts-mini-calendar .fc-scrollgrid {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  background-clip: padding-box !important;
 }

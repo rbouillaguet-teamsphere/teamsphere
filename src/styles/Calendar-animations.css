@@ -1,0 +1,174 @@
+/* Animations pour la page Calendrier */
+
+/* Animation d'entrée des cartes de match */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.match-card-enter {
+  animation: slideInUp 0.3s ease-out;
+}
+
+/* Animation de survol des cartes */
+.match-card {
+  transition: all 0.2s ease-in-out;
+}
+
+.match-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Animation du modal */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-content {
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+/* Animation du backdrop */
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-backdrop {
+  animation: backdropFadeIn 0.2s ease-out;
+}
+
+/* Pulse animation pour le jour actuel */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.today-indicator {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Transition douce pour le changement de vue */
+.view-transition {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.view-transition-enter {
+  opacity: 0;
+}
+
+.view-transition-enter-active {
+  opacity: 1;
+}
+
+/* Animation de chargement */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Effet de survol sur les boutons de navigation */
+.nav-button {
+  transition: all 0.15s ease-in-out;
+}
+
+.nav-button:hover {
+  transform: scale(1.05);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.nav-button:active {
+  transform: scale(0.95);
+}
+
+/* Badge animations */
+@keyframes badgeBounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.badge-enter {
+  animation: badgeBounce 0.3s ease-out;
+}
+
+/* Score reveal animation */
+@keyframes scoreReveal {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.score-reveal {
+  animation: scoreReveal 0.4s ease-out;
+}
+
+/* Empty state animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.empty-state-icon {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Skeleton loading animation */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 0px,
+    #e0e0e0 40px,
+    #f0f0f0 80px
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}

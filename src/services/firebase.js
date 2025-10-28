@@ -339,69 +339,277 @@ export const playerService = {
 };
 
 // ============================================
-// 🏆 MATCH SERVICES
+// 🏆 MATCH SERVICES (VERSION COMPLÈTE)
 // ============================================
 export const matchService = {
-  // Créer un match
+  /**
+   * Créer un match
+   */
   create: async (clubId, teamId, matchData) => {
-    const matchRef = await addDoc(
-      collection(db, `clubs/${clubId}/teams/${teamId}/matches`),
-      {
-        ...matchData,
-        createdAt: serverTimestamp()
-      }
-    );
-    return matchRef.id;
-  },
-  
-  // Récupérer tous les matchs
-  getAll: async (clubId, teamId) => {
-    const snapshot = await getDocs(
-      query(
+    try {
+      const matchRef = await addDoc(
         collection(db, `clubs/${clubId}/teams/${teamId}/matches`),
-        orderBy('date', 'asc')
-      )
-    );
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        {
+          ...matchData,
+          teamId,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        }
+      );
+      return matchRef.id;
+    } catch (error) {
+      console.error('Erreur lors de la création du match:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Alias pour create (pour compatibilité)
+   */
+  createMatch: async (clubId, teamId, matchData) => {
+    return matchService.create(clubId, teamId, matchData);
   },
   
-  // Récupérer un match
+  /**
+   * Récupérer tous les matchs d'une équipe
+   */
+  getAll: async (clubId, teamId) => {
+    try {
+      const snapshot = await getDocs(
+        query(
+          collection(db, `clubs/${clubId}/teams/${teamId}/matches`),
+          orderBy('date', 'desc')
+        )
+      );
+      return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+      console.error('Erreur lors de la récupération des matchs:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Alias pour getAll (pour compatibilité avec CalendarPage)
+   */
+  getTeamMatches: async (clubId, teamId) => {
+    return matchService.getAll(clubId, teamId);
+  },
+  
+  /**
+   * Récupérer un match spécifique
+   */
   get: async (clubId, teamId, matchId) => {
-    const docSnap = await getDoc(
-      doc(db, `clubs/${clubId}/teams/${teamId}/matches`, matchId)
-    );
-    return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null;
+    try {
+      const docSnap = await getDoc(
+        doc(db, `clubs/${clubId}/teams/${teamId}/matches`, matchId)
+      );
+      return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null;
+    } catch (error) {
+      console.error('Erreur lors de la récupération du match:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Alias pour get
+   */
+  getMatch: async (clubId, teamId, matchId) => {
+    return matchService.get(clubId, teamId, matchId);
   },
   
-  // Mettre à jour
+  /**
+   * Mettre à jour un match
+   */
   update: async (clubId, teamId, matchId, updates) => {
-    await updateDoc(
-      doc(db, `clubs/${clubId}/teams/${teamId}/matches`, matchId),
-      updates
-    );
+    try {
+      await updateDoc(
+        doc(db, `clubs/${clubId}/teams/${teamId}/matches`, matchId),
+        {
+          ...updates,
+          updatedAt: serverTimestamp()
+        }
+      );
+      return true;
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du match:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Alias pour update
+   */
+  updateMatch: async (clubId, teamId, matchId, updates) => {
+    return matchService.update(clubId, teamId, matchId, updates);
   },
   
-  // Supprimer
+  /**
+   * Supprimer un match
+   */
   delete: async (clubId, teamId, matchId) => {
-    await deleteDoc(
-      doc(db, `clubs/${clubId}/teams/${teamId}/matches`, matchId)
-    );
+    try {
+      await deleteDoc(
+        doc(db, `clubs/${clubId}/teams/${teamId}/matches`, matchId)
+      );
+      return true;
+    } catch (error) {
+      console.error('Erreur lors de la suppression du match:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Alias pour delete
+   */
+  deleteMatch: async (clubId, teamId, matchId) => {
+    return matchService.delete(clubId, teamId, matchId);
+  },
+
+  /**
+   * Récupérer les matchs à venir (prochains matchs)
+   */
+  getUpcomingMatches: async (clubId, teamId, limit = 5) => {
+    try {
+      const matchesRef = collection(db, `clubs/${clubId}/teams/${teamId}/matches`);
+      const now = new Date();
+      
+      const q = query(
+        matchesRef,
+        where('date', '>=', now),
+        where('status', '==', 'upcoming'),
+        orderBy('date', 'asc')
+      );
+      
+      const snapshot = await getDocs(q);
+      
+      const matches = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      return matches.slice(0, limit);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des matchs à venir:', error);
+      // Si l'erreur vient d'un index manquant, retourner un tableau vide
+      return [];
+    }
+  },
+
+  /**
+   * Récupérer les résultats récents
+   */
+  getRecentResults: async (clubId, teamId, limit = 5) => {
+    try {
+      const matchesRef = collection(db, `clubs/${clubId}/teams/${teamId}/matches`);
+      
+      const q = query(
+        matchesRef,
+        where('status', '==', 'completed'),
+        orderBy('date', 'desc')
+      );
+      
+      const snapshot = await getDocs(q);
+      
+      const matches = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      return matches.slice(0, limit);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des résultats récents:', error);
+      return [];
+    }
+  },
+
+  /**
+   * Mettre à jour le score d'un match
+   */
+  updateMatchScore: async (clubId, teamId, matchId, scoreTeam, scoreOpponent) => {
+    try {
+      const matchRef = doc(db, `clubs/${clubId}/teams/${teamId}/matches`, matchId);
+      
+      await updateDoc(matchRef, {
+        scoreTeam,
+        scoreOpponent,
+        status: 'completed',
+        updatedAt: serverTimestamp()
+      });
+      
+      return true;
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du score:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Calculer les statistiques d'une équipe
+   */
+  getTeamMatchStats: async (clubId, teamId) => {
+    try {
+      const matches = await matchService.getAll(clubId, teamId);
+      
+      const stats = {
+        total: matches.length,
+        played: 0,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        goalsFor: 0,
+        goalsAgainst: 0,
+        upcoming: 0
+      };
+      
+      matches.forEach(match => {
+        if (match.status === 'completed' && match.scoreTeam !== null && match.scoreTeam !== undefined) {
+          stats.played++;
+          stats.goalsFor += match.scoreTeam || 0;
+          stats.goalsAgainst += match.scoreOpponent || 0;
+          
+          if (match.scoreTeam > match.scoreOpponent) {
+            stats.wins++;
+          } else if (match.scoreTeam === match.scoreOpponent) {
+            stats.draws++;
+          } else {
+            stats.losses++;
+          }
+        } else if (match.status === 'upcoming') {
+          stats.upcoming++;
+        }
+      });
+      
+      stats.goalDifference = stats.goalsFor - stats.goalsAgainst;
+      stats.winRate = stats.played > 0 ? (stats.wins / stats.played * 100).toFixed(1) : '0';
+      
+      return stats;
+    } catch (error) {
+      console.error('Erreur lors du calcul des statistiques:', error);
+      throw error;
+    }
   },
   
-  // Écouter les changements en temps réel
+  /**
+   * Écouter les changements en temps réel
+   */
   listen: (clubId, teamId, callback) => {
     return onSnapshot(
       query(
         collection(db, `clubs/${clubId}/teams/${teamId}/matches`),
-        orderBy('date', 'asc')
+        orderBy('date', 'desc')
       ),
       (snapshot) => {
         const matches = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         callback(matches);
+      },
+      (error) => {
+        console.error('Erreur lors de l\'écoute des matchs:', error);
       }
     );
   },
 };
+
+
 /**
  * Créer un nouveau compte utilisateur
  */
