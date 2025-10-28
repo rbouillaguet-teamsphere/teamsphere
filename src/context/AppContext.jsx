@@ -344,39 +344,3 @@ export function useApp() {
   }
   return context;
 }
-
-const completeOnboarding = async (onboardingData) => {
-    try {
-      // 1. Créer le club
-      const clubId = await createClub(onboardingData.club);
-      
-      // 2. Créer l'équipe
-      const teamId = await createTeam(clubId, onboardingData.team);
-      
-      // 3. Ajouter les joueurs
-      if (onboardingData.players?.length) {
-        for (const player of onboardingData.players) {
-          await addPlayer(clubId, teamId, player);
-        }
-      }
-      
-      // 4. Envoyer les invitations
-      if (onboardingData.invites?.length) {
-        // TODO: Implémenter sendInvitations
-        // await sendInvitations(clubId, onboardingData.invites);
-      }
-      
-      // 5. Marquer l'onboarding comme terminé
-      await updateDoc(doc(db, 'users', currentUser.uid), {
-        'onboarding.completed': true,
-        'onboarding.completedAt': serverTimestamp(),
-      });
-      
-      // 6. Rediriger vers le dashboard
-      navigate('/dashboard');
-      
-    } catch (error) {
-      console.error('Error completing onboarding:', error);
-      throw error;
-    }
-  };
