@@ -1,4 +1,4 @@
-@import './styles/calendar-animations.css';
+@import '.src/styles/calendar-animations.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
