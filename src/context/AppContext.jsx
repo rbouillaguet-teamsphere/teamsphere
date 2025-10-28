@@ -327,7 +327,6 @@ console.log('📝 Création du club avec userId:', currentUser.uid);
     teamService,
     playerService,
     matchService,
-    completeOnboarding,
   };
 
   return (
