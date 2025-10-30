@@ -11,12 +11,18 @@ import WelcomeScreen from '@/pages/WelcomeScreen';
 // Onboarding
 import { OnboardingWizard } from '@/components/onboarding';
 
-// Pages protégées (à créer ou importer depuis App.jsx)
+// Pages protégées
 import DashboardPage from '@/pages/DashboardPage';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import PlayersPage from '@/pages/PlayersPage';
 import CalendarPage from '@/pages/CalendarPage';
-// import StatisticsPage from '@/pages/StatisticsPage';
+
+// Pages Statistiques
+import OverviewPage from '@/pages/statistics/OverviewPage';
+import PlayerStatsPage from '@/pages/statistics/PlayerStatsPage';
+import EventStatsPage from '@/pages/statistics/EventStatsPage';
+import RankingsPage from '@/pages/statistics/RankingsPage';
+import ChartsPage from '@/pages/statistics/ChartsPage';
 
 /**
  * Composant pour protéger les routes authentifiées
@@ -115,39 +121,88 @@ export const router = createBrowserRouter([
 
   // Routes protégées (dashboard)
   {
-  path: '/dashboard',
-  element: (
-    <ProtectedRoute>
-      <DashboardPage />
-    </ProtectedRoute>
-  ),
-},
-  {
-  path: '/players',
-  element: (
-    <ProtectedRoute>
-      <PlayersPage />
-    </ProtectedRoute>
-  ),
-},
-  {
-  path: '/calendar',
-  element: (
-    <ProtectedRoute>
-      <DashboardLayout>
-        <CalendarPage />
-      </DashboardLayout>
-    </ProtectedRoute>
-  )
-},
-  {
-    path: '/statistics',
+    path: '/dashboard',
     element: (
       <ProtectedRoute>
-        {/* TODO: Importer StatisticsPage depuis App.jsx */}
-        <div>Statistics - À migrer depuis App.jsx</div>
+        <DashboardPage />
       </ProtectedRoute>
     ),
+  },
+  {
+    path: '/players',
+    element: (
+      <ProtectedRoute>
+        <PlayersPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/calendar',
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout>
+          <CalendarPage />
+        </DashboardLayout>
+      </ProtectedRoute>
+    )
+  },
+
+  // Routes Statistiques avec sous-menu
+  {
+    path: '/statistics/overview',
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout>
+          <OverviewPage />
+        </DashboardLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/statistics/players',
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout>
+          <PlayerStatsPage />
+        </DashboardLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/statistics/events',
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout>
+          <EventStatsPage />
+        </DashboardLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/statistics/rankings',
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout>
+          <RankingsPage />
+        </DashboardLayout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/statistics/charts',
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout>
+          <ChartsPage />
+        </DashboardLayout>
+      </ProtectedRoute>
+    ),
+  },
+
+  // Redirection de /statistics vers /statistics/overview
+  {
+    path: '/statistics',
+    element: <Navigate to="/statistics/overview" replace />,
   },
 
   // 404

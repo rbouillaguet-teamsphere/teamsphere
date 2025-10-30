@@ -1,0 +1,12 @@
+{
+  "name": "teamsphere-stats",
+  "version": "1.2.0",
+  "description": "Page Statistiques pour TeamSphere",
+  "dependencies": {
+    "recharts": "^2.10.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "install-deps": "npm install recharts"
+  }
+}

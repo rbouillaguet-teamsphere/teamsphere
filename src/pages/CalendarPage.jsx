@@ -3,7 +3,7 @@ import { useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { matchService } from '@/services/firebase';
 import Button from '../components/ui/Button';
-// import AddMatchModal from '../components/calendar/AddMatchModal'; // TODO: Créer ce composant
+import AddMatchModal from '../components/calendar/AddMatchModal';
 
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -161,7 +161,6 @@ export default function CalendarPage() {
       </div>
 
       {/* ---- Modal d'ajout de match ---- */}
-      {/* TODO: Créer le composant AddMatchModal
       {showAddModal && (
         <AddMatchModal
           onClose={() => setShowAddModal(false)}
