@@ -266,3 +266,4 @@ export default function AddMatchModal({ onClose, onSuccess }) {
     </div>
   );
 }
+export default AddMatchModal;
