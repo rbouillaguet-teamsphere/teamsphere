@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRef } from 'react';
-import { useApp } from '../context/AppContext';
+import { useApp } from '@/context/AppContext';
 import { matchService } from '@/services/firebase';
-import Button from '../components/ui/Button';
-import AddMatchModal from '../components/calendar/AddMatchModal';
+import Button from '@/components/ui/Button';
+import AddMatchModal from '@/components/calendar/AddMatchModal';
 
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
