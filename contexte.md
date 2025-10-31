@@ -1,60 +1,60 @@
-# Contexte TeamSphere - État Actuel du Projet
+# Contexte TeamSphere - Etat Actuel du Projet
 
-## 📋 Résumé du Projet
+## Resume du Projet
 
-**TeamSphere** est une application web de gestion d'équipes sportives construite avec React, Firebase et Tailwind CSS. L'application permet aux entraîneurs et gestionnaires de clubs de gérer leurs équipes, joueurs, matchs et statistiques.
+**TeamSphere** est une application web de gestion d'equipes sportives construite avec React, Firebase et Tailwind CSS. L'application permet aux entraineurs et gestionnaires de clubs de gerer leurs equipes, joueurs, matchs et statistiques.
 
 **Version actuelle** : 1.2.0  
-**Date de mise à jour** : 30 octobre 2025
+**Date de mise a jour** : 30 octobre 2025
 
 ---
 
-## 📊 État Actuel du Projet
+## ðŸ“Š Ã‰tat Actuel du Projet
 
-### ✅ Fonctionnalités Complétées
+### âœ… FonctionnalitÃ©s ComplÃ©tÃ©es
 
 **Version 1.2.0 (Actuelle)**
-- ✅ Authentification Firebase complète
-- ✅ Onboarding wizard en 4 étapes
-- ✅ Dashboard avec métriques en temps réel
-- ✅ Gestion des joueurs (CRUD complet)
-- ✅ Page Calendrier avec deux vues (semaine/liste)
-- ✅ Service matchService avec 10 fonctions
+- âœ… Authentification Firebase complÃ¨te
+- âœ… Onboarding wizard en 4 Ã©tapes
+- âœ… Dashboard avec mÃ©triques en temps rÃ©el
+- âœ… Gestion des joueurs (CRUD complet)
+- âœ… Page Calendrier avec deux vues (semaine/liste)
+- âœ… Service matchService avec 10 fonctions
 - ✅ Gestion des matchs (création, affichage, scores)
-- ✅ **Module Statistiques complet avec menu déroulant**
-- ✅ **5 pages statistiques (Overview, Players, Events, Rankings, Charts)**
-- ✅ **Composants de statistiques réutilisables**
-- ✅ **Graphiques Recharts (line, bar, pie)**
-- ✅ **Calculs automatiques des métriques**
-- ✅ Architecture multi-tenant (clubs/équipes)
-- ✅ Navigation et routing complets
-- ✅ Déploiement Vercel fonctionnel
+- ✅ Composant AddMatchModal fonctionnel
+- âœ… **Module Statistiques complet avec menu dÃ©roulant**
+- âœ… **5 pages statistiques (Overview, Players, Events, Rankings, Charts)**
+- âœ… **Composants de statistiques rÃ©utilisables**
+- âœ… **Graphiques Recharts (line, bar, pie)**
+- âœ… **Calculs automatiques des mÃ©triques**
+- âœ… Architecture multi-tenant (clubs/Ã©quipes)
+- âœ… Navigation et routing complets
+- âœ… DÃ©ploiement Vercel fonctionnel
 
-### 🚧 Fonctionnalités En Cours / À Améliorer
+### ðŸš§ FonctionnalitÃ©s En Cours / Ã€ AmÃ©liorer
 
-**Statistiques (améliorations futures)**
+**Statistiques (amÃ©liorations futures)**
 - [ ] Export des statistiques (PDF/Excel)
-- [ ] Statistiques par compétition
+- [ ] Statistiques par compÃ©tition
 - [ ] Comparaison entre saisons
-- [ ] Statistiques détaillées par joueur (buts, passes, cartons)
-- [ ] Graphiques avancés (heat maps, radar)
+- [ ] Statistiques dÃ©taillÃ©es par joueur (buts, passes, cartons)
+- [ ] Graphiques avancÃ©s (heat maps, radar)
 - [ ] Analyse tactique (formations, zones)
 
 **Calendrier**
-- [ ] Créer composant AddMatchModal (actuellement commenté)
-- [ ] Édition de matchs existants
+- [ ] Ã‰dition de matchs existants
 - [ ] Suppression de matchs
-- [ ] Filtres par compétition
+- [ ] Filtres par compÃ©tition
 
-**Général**
+**GÃ©nÃ©ral**
 - [ ] Mode sombre
 - [ ] Notifications push
 - [ ] Messagerie interne
-- [ ] Exports de données
+- [ ] Exports de donnÃ©es
 
 ---
 
-## 🏗️ Architecture Technique
+## ðŸ—ï¸ Architecture Technique
 
 ### Stack Technique
 ```
@@ -69,44 +69,44 @@
 ### Structure des Dossiers
 ```
 src/
-├── components/
-│   ├── ui/              # Composants réutilisables (Button, Input, Card)
-│   ├── layout/          # DashboardLayout, Sidebar
-│   ├── calendar/        # Composants calendrier
-│   ├── stats/           # ✅ Composants statistiques (5 nouveaux)
-│   │   ├── StatsOverview.jsx
-│   │   ├── PerformanceChart.jsx
-│   │   ├── ComparisonStats.jsx
-│   │   ├── PlayersStats.jsx
-│   │   └── MatchesTable.jsx
-│   └── onboarding/      # Wizard et steps
-├── pages/
-│   ├── DashboardPage.jsx
-│   ├── PlayersPage.jsx
-│   ├── CalendarPage.jsx
-│   └── statistics/      # ✅ Nouveau dossier
-│       ├── OverviewPage.jsx
-│       ├── PlayerStatsPage.jsx
-│       ├── EventStatsPage.jsx
-│       ├── RankingsPage.jsx
-│       └── ChartsPage.jsx
-├── services/
-│   └── firebase/
-│       ├── auth.js
-│       ├── clubs.js
-│       ├── teams.js
-│       ├── players.js
-│       ├── matches.js
-│       └── index.js
-├── context/
-│   └── AppContext.jsx   # Contexte global de l'app
-└── router/
-    └── index.jsx        # Configuration des routes (mis à jour)
+â”œâ”€â”€ components/
+â”‚   â”œâ”€â”€ ui/              # Composants rÃ©utilisables (Button, Input, Card)
+â”‚   â”œâ”€â”€ layout/          # DashboardLayout, Sidebar
+â”‚   â”œâ”€â”€ calendar/        # Composants calendrier
+â”‚   â”œâ”€â”€ stats/           # âœ… Composants statistiques (5 nouveaux)
+â”‚   â”‚   â”œâ”€â”€ StatsOverview.jsx
+â”‚   â”‚   â”œâ”€â”€ PerformanceChart.jsx
+â”‚   â”‚   â”œâ”€â”€ ComparisonStats.jsx
+â”‚   â”‚   â”œâ”€â”€ PlayersStats.jsx
+â”‚   â”‚   â””â”€â”€ MatchesTable.jsx
+â”‚   â””â”€â”€ onboarding/      # Wizard et steps
+â”œâ”€â”€ pages/
+â”‚   â”œâ”€â”€ DashboardPage.jsx
+â”‚   â”œâ”€â”€ PlayersPage.jsx
+â”‚   â”œâ”€â”€ CalendarPage.jsx
+â”‚   â””â”€â”€ statistics/      # âœ… Nouveau dossier
+â”‚       â”œâ”€â”€ OverviewPage.jsx
+â”‚       â”œâ”€â”€ PlayerStatsPage.jsx
+â”‚       â”œâ”€â”€ EventStatsPage.jsx
+â”‚       â”œâ”€â”€ RankingsPage.jsx
+â”‚       â””â”€â”€ ChartsPage.jsx
+â”œâ”€â”€ services/
+â”‚   â””â”€â”€ firebase/
+â”‚       â”œâ”€â”€ auth.js
+â”‚       â”œâ”€â”€ clubs.js
+â”‚       â”œâ”€â”€ teams.js
+â”‚       â”œâ”€â”€ players.js
+â”‚       â”œâ”€â”€ matches.js
+â”‚       â””â”€â”€ index.js
+â”œâ”€â”€ context/
+â”‚   â””â”€â”€ AppContext.jsx   # Contexte global de l'app
+â””â”€â”€ router/
+    â””â”€â”€ index.jsx        # Configuration des routes (mis Ã  jour)
 ```
 
 ---
 
-## 🗄️ Structure des Données Firestore
+## ðŸ—„ï¸ Structure des DonnÃ©es Firestore
 
 ### Collection: matches
 ```javascript
@@ -114,11 +114,11 @@ src/
 {
   opponent: string,        // Nom adversaire
   date: Timestamp,         // Date du match
-  isHome: boolean,         // Domicile/Extérieur
+  isHome: boolean,         // Domicile/ExtÃ©rieur
   location: string,        // Lieu
-  competition: string,     // Compétition
+  competition: string,     // CompÃ©tition
   status: string,          // "upcoming" | "completed" | "cancelled"
-  scoreTeam: number,       // Score équipe
+  scoreTeam: number,       // Score Ã©quipe
   scoreOpponent: number,   // Score adversaire
   teamId: string,
   createdAt: Timestamp,
@@ -132,7 +132,7 @@ src/
 {
   name: string,           // Nom complet
   position: string,       // Position (optional)
-  jerseyNumber: number,   // Numéro maillot (optional)
+  jerseyNumber: number,   // NumÃ©ro maillot (optional)
   status: string,         // "active" | "injured" | "suspended"
   teamId: string,
   createdAt: Timestamp,
@@ -146,7 +146,7 @@ src/
 {
   name: string,
   category: string,       // U12, U15, Seniors, etc.
-  gender: string,         // Masculin, Féminin, Mixte
+  gender: string,         // Masculin, FÃ©minin, Mixte
   season: string,         // 2024-2025
   clubId: string,
   createdAt: Timestamp
@@ -155,7 +155,7 @@ src/
 
 ---
 
-## 🎨 Design System
+## ðŸŽ¨ Design System
 
 ### Composants UI Existants
 ```javascript
@@ -177,67 +177,67 @@ src/
 - Success: `green-500`
 - Danger: `red-500`
 - Warning: `yellow-500`
-- Gray scales: `gray-100` à `gray-900`
+- Gray scales: `gray-100` Ã  `gray-900`
 
 ---
 
-## 📊 Module Statistiques - Détails
+## ðŸ“Š Module Statistiques - DÃ©tails
 
 ### Architecture du Menu
 ```
-📊 Statistiques (Menu déroulant)
-├── 📊 Vue d'ensemble    → /statistics/overview
-├── 👥 Par joueur        → /statistics/players
-├── 📅 Par événement     → /statistics/events
-├── 🏆 Classements       → /statistics/rankings
-└── 📈 Graphiques        → /statistics/charts
+ðŸ“Š Statistiques (Menu dÃ©roulant)
+â”œâ”€â”€ ðŸ“Š Vue d'ensemble    â†’ /statistics/overview
+â”œâ”€â”€ ðŸ‘¥ Par joueur        â†’ /statistics/players
+â”œâ”€â”€ ðŸ“… Par Ã©vÃ©nement     â†’ /statistics/events
+â”œâ”€â”€ ðŸ† Classements       â†’ /statistics/rankings
+â””â”€â”€ ðŸ“ˆ Graphiques        â†’ /statistics/charts
 ```
 
 ### Composants Statistiques
 
 #### StatsOverview.jsx
-- 8 cards de métriques clés
-- Icônes emoji pour identification
+- 8 cards de mÃ©triques clÃ©s
+- IcÃ´nes emoji pour identification
 - Couleurs conditionnelles (vert/rouge/gris)
 - Layout responsive (grid 2x4)
 
 #### PerformanceChart.jsx
-- Graphique linéaire : évolution des points
-- Graphique en barres : buts marqués vs encaissés
-- Recharts avec tooltips personnalisés
+- Graphique linÃ©aire : Ã©volution des points
+- Graphique en barres : buts marquÃ©s vs encaissÃ©s
+- Recharts avec tooltips personnalisÃ©s
 - Responsive et interactif
 
 #### ComparisonStats.jsx
 - Graphiques circulaires (PieChart)
-- Comparaison domicile/extérieur
-- Légendes et pourcentages
+- Comparaison domicile/extÃ©rieur
+- LÃ©gendes et pourcentages
 - Couleurs distinctives
 
 #### PlayersStats.jsx
 - Tableau interactif des joueurs
 - Tri par colonne
 - Recherche par nom
-- Avatar + stats détaillées
+- Avatar + stats dÃ©taillÃ©es
 
 #### MatchesTable.jsx
 - Historique complet des matchs
 - Tri par date
-- Filtres par résultat
+- Filtres par rÃ©sultat
 - Badges de status
 
 ### Pages Statistiques
 
 #### OverviewPage
 **Contenu** :
-- 8 métriques clés en cards
-- Graphique d'évolution
-- Résumé de la saison
+- 8 mÃ©triques clÃ©s en cards
+- Graphique d'Ã©volution
+- RÃ©sumÃ© de la saison
 
 **Calculs** :
-- Matchs joués, victoires, nuls, défaites
-- Buts marqués/encaissés, différence
+- Matchs jouÃ©s, victoires, nuls, dÃ©faites
+- Buts marquÃ©s/encaissÃ©s, diffÃ©rence
 - Taux de victoire (%)
-- Série actuelle (streak)
+- SÃ©rie actuelle (streak)
 
 #### PlayerStatsPage
 **Contenu** :
@@ -248,12 +248,12 @@ src/
 #### EventStatsPage
 **Contenu** :
 - Liste chronologique des matchs
-- Détails de chaque match
-- Filtres par résultat
+- DÃ©tails de chaque match
+- Filtres par rÃ©sultat
 
 #### RankingsPage
 **Contenu** :
-- Comparaisons domicile/extérieur
+- Comparaisons domicile/extÃ©rieur
 - Graphiques circulaires
 - Statistiques par lieu
 
@@ -265,38 +265,38 @@ src/
 
 ---
 
-## 🔧 Services Disponibles
+## ðŸ”§ Services Disponibles
 
 ### matchService
 ```javascript
-// Récupérer tous les matchs
+// RÃ©cupÃ©rer tous les matchs
 matchService.getAll(clubId, teamId)
 
-// Récupérer les prochains matchs
+// RÃ©cupÃ©rer les prochains matchs
 matchService.getUpcomingMatches(clubId, teamId, limit)
 
-// Récupérer les résultats récents
+// RÃ©cupÃ©rer les rÃ©sultats rÃ©cents
 matchService.getRecentResults(clubId, teamId, limit)
 
-// Calculer les stats de l'équipe
+// Calculer les stats de l'Ã©quipe
 matchService.getTeamMatchStats(clubId, teamId)
 
-// Écouter les changements en temps réel
+// Ã‰couter les changements en temps rÃ©el
 matchService.listen(clubId, teamId, callback)
 ```
 
 ### playerService
 ```javascript
-// Récupérer tous les joueurs
+// RÃ©cupÃ©rer tous les joueurs
 playerService.getAll(clubId, teamId)
 
-// Écouter les changements
+// Ã‰couter les changements
 playerService.listen(clubId, teamId, callback)
 ```
 
 ---
 
-## 📈 Statistiques Calculées
+## ðŸ“ˆ Statistiques CalculÃ©es
 
 ### Structure des Stats
 ```javascript
@@ -304,13 +304,13 @@ playerService.listen(clubId, teamId, callback)
   matchesPlayed: number,      // Total matchs
   wins: number,               // Victoires
   draws: number,              // Nuls
-  losses: number,             // Défaites
+  losses: number,             // DÃ©faites
   winRate: string,            // Taux de victoire (%)
-  goalsScored: number,        // Buts marqués
-  goalsConceded: number,      // Buts encaissés
-  goalDifference: number,     // Différence de buts
+  goalsScored: number,        // Buts marquÃ©s
+  goalsConceded: number,      // Buts encaissÃ©s
+  goalDifference: number,     // DiffÃ©rence de buts
   homeWins: number,           // Victoires domicile
-  awayWins: number,           // Victoires extérieur
+  awayWins: number,           // Victoires extÃ©rieur
   currentStreak: {
     type: 'win'|'loss'|'draw'|'none',
     count: number
@@ -321,60 +321,60 @@ playerService.listen(clubId, teamId, callback)
 ### Fonction calculateStreak
 ```javascript
 const calculateStreak = (matches) => {
-  // Trie les matchs par date décroissante
-  // Identifie la série actuelle de résultats
+  // Trie les matchs par date dÃ©croissante
+  // Identifie la sÃ©rie actuelle de rÃ©sultats
   // Retourne { type, count }
 };
 ```
 
 ---
 
-## 🎯 Fonctionnalités du Module Statistiques
+## ðŸŽ¯ FonctionnalitÃ©s du Module Statistiques
 
-### ✅ Implémenté
+### âœ… ImplÃ©mentÃ©
 
 **Navigation**
-- ✅ Menu déroulant dans sidebar
-- ✅ 5 sous-pages accessibles
-- ✅ Auto-ouverture sur pages stats
-- ✅ Highlighting page active
-- ✅ Flèche animée (rotation)
+- âœ… Menu dÃ©roulant dans sidebar
+- âœ… 5 sous-pages accessibles
+- âœ… Auto-ouverture sur pages stats
+- âœ… Highlighting page active
+- âœ… FlÃ¨che animÃ©e (rotation)
 
 **Visualisations**
-- ✅ 8 métriques clés en cards
-- ✅ Graphique linéaire (performance)
-- ✅ Graphique barres (buts)
-- ✅ Graphiques circulaires (comparaisons)
-- ✅ Tableaux interactifs
+- âœ… 8 mÃ©triques clÃ©s en cards
+- âœ… Graphique linÃ©aire (performance)
+- âœ… Graphique barres (buts)
+- âœ… Graphiques circulaires (comparaisons)
+- âœ… Tableaux interactifs
 
 **Calculs**
-- ✅ Statistiques équipe en temps réel
-- ✅ Série de victoires/défaites
-- ✅ Comparaisons domicile/extérieur
-- ✅ Agrégations (totaux, moyennes)
+- âœ… Statistiques Ã©quipe en temps rÃ©el
+- âœ… SÃ©rie de victoires/dÃ©faites
+- âœ… Comparaisons domicile/extÃ©rieur
+- âœ… AgrÃ©gations (totaux, moyennes)
 
 **Filtres**
-- ✅ Période (5, 10 derniers, saison)
-- ✅ Lieu (domicile, extérieur, tous)
-- ✅ Résultat (victoire, nul, défaite)
-- ✅ Recherche joueurs par nom
+- âœ… PÃ©riode (5, 10 derniers, saison)
+- âœ… Lieu (domicile, extÃ©rieur, tous)
+- âœ… RÃ©sultat (victoire, nul, dÃ©faite)
+- âœ… Recherche joueurs par nom
 
 **UX/UI**
-- ✅ Design moderne et cohérent
-- ✅ Responsive (desktop, tablette, mobile)
-- ✅ Empty states
-- ✅ Transitions fluides
-- ✅ Tooltips informatifs
+- âœ… Design moderne et cohÃ©rent
+- âœ… Responsive (desktop, tablette, mobile)
+- âœ… Empty states
+- âœ… Transitions fluides
+- âœ… Tooltips informatifs
 
-### 🚧 À Améliorer
+### ðŸš§ Ã€ AmÃ©liorer
 
-**Fonctionnalités**
+**FonctionnalitÃ©s**
 - [ ] Export statistiques (PDF, Excel)
-- [ ] Statistiques par compétition
-- [ ] Graphiques avancés (heat maps, radar)
+- [ ] Statistiques par compÃ©tition
+- [ ] Graphiques avancÃ©s (heat maps, radar)
 - [ ] Comparaisons entre saisons
-- [ ] Objectifs et prédictions
-- [ ] Stats détaillées joueurs (buts, passes, cartons)
+- [ ] Objectifs et prÃ©dictions
+- [ ] Stats dÃ©taillÃ©es joueurs (buts, passes, cartons)
 
 **Performance**
 - [ ] Cache des calculs
@@ -391,12 +391,12 @@ const calculateStreak = (matches) => {
 
 ---
 
-## 💡 Points d'Attention Techniques
+## ðŸ’¡ Points d'Attention Techniques
 
-### Ordre d'Exécution React
+### Ordre d'ExÃ©cution React
 Dans les composants stats, **toujours** respecter cet ordre :
 1. Hooks React (useState, useContext)
-2. Filtrage des données (useMemo)
+2. Filtrage des donnÃ©es (useMemo)
 3. **Fonctions de calcul (AVANT usage)**
 4. Calculs statistiques (useMemo utilisant les fonctions)
 5. Rendu JSX
@@ -404,27 +404,27 @@ Dans les composants stats, **toujours** respecter cet ordre :
 **Exemple correct** :
 ```javascript
 const CompletedMatches = useMemo(/* ... */);
-const calculateStreak = (matches) => { /* ... */ }; // ✅ Défini avant
+const calculateStreak = (matches) => { /* ... */ }; // âœ… DÃ©fini avant
 const stats = useMemo(() => {
-  const streak = calculateStreak(/* ... */); // ✅ Utilisé après
+  const streak = calculateStreak(/* ... */); // âœ… UtilisÃ© aprÃ¨s
 }, [/* ... */]);
 ```
 
 ### Performance Recharts
-- Limiter points sur graphiques (< 100 pour fluidité)
+- Limiter points sur graphiques (< 100 pour fluiditÃ©)
 - Utiliser `isAnimationActive={false}` si lenteur
-- Wrapper dans useMemo pour éviter re-render
-- Considérer throttle sur interactions
+- Wrapper dans useMemo pour Ã©viter re-render
+- ConsidÃ©rer throttle sur interactions
 
 ### Gestion Empty States
-- **Toujours** vérifier `completedMatches.length === 0`
-- Afficher message clair + appel à l'action
+- **Toujours** vÃ©rifier `completedMatches.length === 0`
+- Afficher message clair + appel Ã  l'action
 - Garder structure page visible
-- Icônes explicatives
+- IcÃ´nes explicatives
 
 ---
 
-## 📚 Documentation Disponible
+## ðŸ“š Documentation Disponible
 
 ### Guides Projets
 - `README.md` - Documentation principale
@@ -433,39 +433,39 @@ const stats = useMemo(() => {
 
 ### Guides Statistiques (Nouveaux)
 - `README-MENU-STATISTIQUES.md` - Vue d'ensemble module
-- `GUIDE-INSTALLATION-MENU.md` - Installation pas à pas
+- `GUIDE-INSTALLATION-MENU.md` - Installation pas Ã  pas
 - `README-CORRECTIF.md` - Documentation bug calculateStreak
 
 ### Architecture
-- Structure des dossiers documentée
-- Services Firebase documentés
-- Composants UI documentés
+- Structure des dossiers documentÃ©e
+- Services Firebase documentÃ©s
+- Composants UI documentÃ©s
 
 ---
 
-## 🚀 Prochaines Étapes Suggérées
+## ðŸš€ Prochaines Ã‰tapes SuggÃ©rÃ©es
 
 ### Court Terme
-1. **Créer AddMatchModal** pour page Calendrier
-2. **Ajouter édition/suppression matchs**
-3. **Implémenter mode sombre**
+1. **CrÃ©er AddMatchModal** pour page Calendrier
+2. **Ajouter Ã©dition/suppression matchs**
+3. **ImplÃ©menter mode sombre**
 4. **Ajouter exports PDF/Excel**
 
 ### Moyen Terme
-1. **Module Exercices** (entraînements)
+1. **Module Exercices** (entraÃ®nements)
 2. **Module Communication** (messagerie)
 3. **Module Insights** (analyse IA)
 4. **Application mobile** (React Native)
 
 ### Long Terme
 1. **Multi-sports** (football, basketball, etc.)
-2. **Marketplace** (plugins, intégrations)
-3. **API publique** pour développeurs tiers
+2. **Marketplace** (plugins, intÃ©grations)
+3. **API publique** pour dÃ©veloppeurs tiers
 4. **Version white-label** pour clubs
 
 ---
 
-## 🔗 Liens Utiles
+## ðŸ”— Liens Utiles
 
 ### Documentation Externe
 - [React](https://react.dev/)
@@ -474,8 +474,8 @@ const stats = useMemo(() => {
 - [Recharts](https://recharts.org/)
 - [React Router](https://reactrouter.com/)
 
-### Fichiers Clés du Projet
-- `src/context/AppContext.jsx` - État global
+### Fichiers ClÃ©s du Projet
+- `src/context/AppContext.jsx` - Ã‰tat global
 - `src/services/firebase/matches.js` - Service matchs
 - `src/components/layout/Sidebar.jsx` - Navigation
 - `src/pages/statistics/*` - Pages statistiques
@@ -483,50 +483,50 @@ const stats = useMemo(() => {
 
 ---
 
-## ⚠️ Notes Importantes
+## âš ï¸ Notes Importantes
 
-### Dépendances Critiques
-- **Recharts** : Installé pour graphiques (v2.10.0)
+### DÃ©pendances Critiques
+- **Recharts** : InstallÃ© pour graphiques (v2.10.0)
 - **Firebase SDK** : v10.12.0
 - **React Router** : v6.23.0
 
 ### Configuration Requise
 - Node.js 18+
 - npm ou yarn
-- Compte Firebase configuré
+- Compte Firebase configurÃ©
 - Variables d'environnement `.env`
 
 ### Limitations Actuelles
-- Statistiques joueurs limitées (pas de buts/passes individuels dans data model)
-- Pas de données historiques multi-saisons
-- Calculs tous côté client (pas de cloud functions)
+- Statistiques joueurs limitÃ©es (pas de buts/passes individuels dans data model)
+- Pas de donnÃ©es historiques multi-saisons
+- Calculs tous cÃ´tÃ© client (pas de cloud functions)
 - Pas de cache persistant
 
 ---
 
-## 📊 Métriques du Projet
+## ðŸ“Š MÃ©triques du Projet
 
 **Code**
 - ~5000 lignes de code React
 - 25+ composants
 - 15+ pages
 - 6 services Firebase
-- 100% TypeScript-ready (pas encore migré)
+- 100% TypeScript-ready (pas encore migrÃ©)
 
 **Features**
 - 5 modules principaux (Auth, Dashboard, Joueurs, Calendrier, Statistiques)
-- 3 rôles utilisateurs (owner, admin, member)
-- Multi-tenant (clubs/équipes)
-- Temps réel (Firestore listeners)
+- 3 rÃ´les utilisateurs (owner, admin, member)
+- Multi-tenant (clubs/Ã©quipes)
+- Temps rÃ©el (Firestore listeners)
 
 **Performance**
 - Build time : ~15s
-- Bundle size : ~250 KB (gzippé)
+- Bundle size : ~250 KB (gzippÃ©)
 - First paint : < 1s
 - Time to interactive : < 2s
 
 ---
 
-**Statut** : ✅ Production Ready (v1.2.0)  
-**Dernière mise à jour** : 30 octobre 2025  
-**Prochaine version prévue** : 1.3.0 (Exercices/Entraînements)
+**Statut** : âœ… Production Ready (v1.2.0)  
+**DerniÃ¨re mise Ã  jour** : 30 octobre 2025  
+**Prochaine version prÃ©vue** : 1.3.0 (Exercices/EntraÃ®nements)
