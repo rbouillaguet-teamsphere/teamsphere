@@ -1,6 +1,12 @@
 // src/App.jsx
 import React from 'react';
 import { AppProvider, useApp } from './context/AppContext';
+import { useEffect } from 'react';
+import { platform } from '@/utils/platform';
+import { StatusBar, Style } from '@capacitor/status-bar';
+import { SplashScreen } from '@capacitor/splash-screen';
+import { keyboardUtils } from '@/utils/keyboard';
+import { backButtonHandler } from '@/utils/backButton';
 
 // ============================================
 // 🎨 COMPOSANTS COMMUNS
@@ -210,22 +216,30 @@ function Sidebar() {
   if (!sidebarOpen) return null;
 
   return (
-    <aside className="w-64 bg-gradient-to-b from-blue-900 to-blue-800 text-white flex flex-col shadow-xl">
-      <div className="p-6 border-b border-blue-700">
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <span className="text-3xl">{selectedClub?.logo || '🏉'}</span>
-          <span>TeamSphere</span>
-        </h1>
-        <p className="text-blue-200 text-sm mt-1">{selectedClub?.name || 'Chargement...'}</p>
+    <aside className="w-64 bg-gray-800 text-white flex flex-col">
+      {/* Club header */}
+      <div className="p-6 border-b border-gray-700">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-3">
+            🏉
+          </div>
+          <h2 className="font-bold text-lg">{selectedClub?.name || 'TeamSphere'}</h2>
+          {selectedClub && (
+            <p className="text-sm text-gray-400 mt-1">{selectedClub.sport}</p>
+          )}
+        </div>
       </div>
 
+      {/* Team selector */}
       {teams.length > 0 && (
-        <div className="p-4 border-b border-blue-700">
-          <label className="text-xs text-blue-200 uppercase font-semibold mb-2 block">Équipe</label>
+        <div className="p-4 border-b border-gray-700">
+          <label className="text-xs text-gray-400 uppercase tracking-wide block mb-2">
+            Équipe
+          </label>
           <select
             value={selectedTeamId || ''}
             onChange={(e) => setSelectedTeamId(e.target.value)}
-            className="w-full bg-blue-700 text-white rounded-lg px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {teams.map(team => (
               <option key={team.id} value={team.id}>
@@ -236,27 +250,37 @@ function Sidebar() {
         </div>
       )}
 
-      <nav className="flex-1 p-4 space-y-2">
-        {menuItems.map(item => (
-          <button
-            key={item.id}
-            onClick={() => setCurrentView(item.id)}
-            className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all ${
-              currentView === item.id
-                ? 'bg-blue-600 shadow-md'
-                : 'hover:bg-blue-700/50'
-            }`}
-          >
-            <span className="text-xl">{item.icon}</span>
-            <span className="font-medium">{item.label}</span>
-          </button>
-        ))}
+      {/* Navigation */}
+      <nav className="flex-1 p-4">
+        <ul className="space-y-2">
+          {menuItems.map(item => (
+            <li key={item.id}>
+              <button
+                onClick={() => setCurrentView(item.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+                  currentView === item.id
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                <span className="text-xl">{item.icon}</span>
+                <span className="font-medium">{item.label}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
       </nav>
 
-      <div className="p-4 border-t border-blue-700">
-        <button className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-blue-700/50 transition-all">
-          <span className="text-xl">⚙️</span>
-          <span className="font-medium">Paramètres</span>
+      {/* User section */}
+      <div className="p-4 border-t border-gray-700">
+        <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-700 transition-colors text-left">
+          <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+            👤
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-medium truncate">Mon compte</p>
+            <p className="text-xs text-gray-400">Paramètres</p>
+          </div>
         </button>
       </div>
     </aside>
@@ -264,907 +288,333 @@ function Sidebar() {
 }
 
 function Topbar() {
-  const { selectedClub, selectedTeam, currentUser, userMembership, sidebarOpen, setSidebarOpen, setShowClubSwitcher, logout } = useApp();
+  const { toggleSidebar, currentUser, logout, showClubSwitcher, setShowClubSwitcher } = useApp();
 
   return (
-    <header className="bg-white shadow-sm border-b px-6 py-4">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-gray-600 hover:text-gray-800 text-2xl"
-          >
-            ☰
-          </button>
-          <div>
-            <div className="flex items-center gap-3">
-              <h2 className="text-xl font-bold text-gray-800">{selectedTeam?.name || 'TeamSphere'}</h2>
-              {userMembership && (
-                <Badge variant={userMembership.role === 'admin' ? 'admin' : 'coach'}>
-                  {userMembership.role === 'admin' ? 'Admin' : 'Coach'}
-                </Badge>
-              )}
-            </div>
-            {selectedClub && (
-              <p className="text-sm text-gray-500">{selectedClub.name} • {selectedClub.sport}</p>
-            )}
-          </div>
-        </div>
+    <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+      <div className="flex items-center gap-4">
+        <button
+          onClick={toggleSidebar}
+          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+        >
+          <span className="text-2xl">☰</span>
+        </button>
+        <h1 className="text-xl font-bold text-gray-800">TeamSphere</h1>
+      </div>
 
-        <div className="flex items-center gap-4">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setShowClubSwitcher(true)}
-            icon={selectedClub?.logo || '🏉'}
-          >
-            Changer de club
-          </Button>
-
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <p className="text-sm font-medium text-gray-800">{currentUser?.email || 'Utilisateur'}</p>
-              <button 
-                onClick={logout}
-                className="text-xs text-gray-500 hover:text-gray-700"
-              >
-                Déconnexion
-              </button>
-            </div>
-            <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
-              {currentUser?.email?.[0]?.toUpperCase() || 'U'}
-            </div>
-          </div>
-        </div>
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => setShowClubSwitcher(true)}
+          className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+        >
+          Changer de club
+        </button>
+        <button
+          onClick={logout}
+          className="px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+        >
+          Déconnexion
+        </button>
       </div>
     </header>
   );
 }
 
-// ============================================
-// 🎯 COMPOSANTS FEATURES
-// ============================================
-
-function StatsPanel() {
-  const { players, matches } = useApp();
-
-  const stats = [
-    { 
-      label: 'Joueurs actifs', 
-      value: players.filter(p => p.status === 'active').length, 
-      icon: '👥', 
-      color: 'blue' 
-    },
-    { 
-      label: 'Matchs à venir', 
-      value: matches.filter(m => m.status === 'upcoming').length, 
-      icon: '🏉', 
-      color: 'green' 
-    },
-    { 
-      label: 'Présence moyenne', 
-      value: `${Math.round(players.reduce((acc, p) => acc + (p.stats?.attendance || 0), 0) / (players.length || 1))}%`, 
-      icon: '📊', 
-      color: 'yellow' 
-    },
-    { 
-      label: 'Total joueurs', 
-      value: players.length, 
-      icon: '👤', 
-      color: 'purple' 
-    },
-  ];
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {stats.map((stat, index) => (
-        <Card key={index} className="hover:shadow-lg transition-shadow">
-          <div className="flex items-center gap-4">
-            <div className="text-4xl p-3 bg-gray-100 rounded-lg">
-              {stat.icon}
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">{stat.label}</p>
-              <p className="text-2xl font-bold text-gray-800">{stat.value}</p>
-            </div>
-          </div>
-        </Card>
-      ))}
-    </div>
-  );
-}
-
-function PlayersList() {
-  const { players, setSelectedPlayer, hasPermission } = useApp();
-
-  return (
-    <Card 
-      title="Liste des joueurs" 
-      actions={
-        hasPermission('write') && (
-          <Button size="sm" icon="➕">Ajouter</Button>
-        )
-      }
-      className="h-full"
-    >
-      <div className="space-y-3 max-h-96 overflow-y-auto">
-        {players.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <p className="text-4xl mb-2">👥</p>
-            <p>Aucun joueur dans cette équipe</p>
-            {hasPermission('write') && (
-              <Button variant="secondary" size="sm" className="mt-4">
-                Ajouter le premier joueur
-              </Button>
-            )}
-          </div>
-        ) : (
-          players.map(player => (
-            <div
-              key={player.id}
-              onClick={() => setSelectedPlayer(player)}
-              className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 cursor-pointer border"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
-                  {player.name?.split(' ').map(n => n[0]).join('') || '??'}
-                </div>
-                <div>
-                  <p className="font-medium text-gray-800">{player.name}</p>
-                  <p className="text-sm text-gray-500">{player.position}</p>
-                </div>
-              </div>
-              <Badge variant={player.status === 'active' ? 'success' : 'warning'}>
-                {player.status === 'active' ? 'Actif' : 'Blessé'}
-              </Badge>
-            </div>
-          ))
-        )}
-      </div>
-    </Card>
-  );
-}
-
-function PlayerModal() {
-  const { selectedPlayer, setSelectedPlayer, hasPermission } = useApp();
-
-  if (!selectedPlayer) return null;
-
-  return (
-    <Modal
-      isOpen={!!selectedPlayer}
-      onClose={() => setSelectedPlayer(null)}
-      title={selectedPlayer.name}
-    >
-      <div className="space-y-4">
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-2xl">
-            {selectedPlayer.name?.split(' ').map(n => n[0]).join('') || '??'}
-          </div>
-          <div>
-            <p className="font-semibold text-lg">{selectedPlayer.position}</p>
-            <Badge variant={selectedPlayer.status === 'active' ? 'success' : 'warning'}>
-              {selectedPlayer.status === 'active' ? 'Actif' : 'Blessé'}
-            </Badge>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4 pt-4">
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <p className="text-sm text-gray-600">Essais</p>
-            <p className="text-2xl font-bold text-blue-600">{selectedPlayer.stats?.tries || 0}</p>
-          </div>
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <p className="text-sm text-gray-600">Placages</p>
-            <p className="text-2xl font-bold text-green-600">{selectedPlayer.stats?.tackles || 0}</p>
-          </div>
-          <div className="bg-gray-50 p-4 rounded-lg col-span-2">
-            <p className="text-sm text-gray-600">Taux de présence</p>
-            <div className="flex items-center gap-3 mt-2">
-              <div className="flex-1 bg-gray-200 rounded-full h-3">
-                <div
-                  className="bg-blue-600 h-3 rounded-full"
-                  style={{ width: `${selectedPlayer.stats?.attendance || 0}%` }}
-                />
-              </div>
-              <span className="text-xl font-bold">{selectedPlayer.stats?.attendance || 0}%</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-2 pt-4">
-          {hasPermission('write') && (
-            <Button variant="primary" onClick={() => alert('Modifier - À implémenter')}>
-              Modifier
-            </Button>
-          )}
-          <Button variant="secondary" onClick={() => setSelectedPlayer(null)}>
-            Fermer
-          </Button>
-        </div>
-      </div>
-    </Modal>
-  );
-}
-
-function CalendarView() {
-  const { matches, selectedTeam } = useApp();
-
-  return (
-    <Card title={`Calendrier${selectedTeam ? ` - ${selectedTeam.name}` : ''}`}>
-      <div className="space-y-3">
-        {matches.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <p className="text-4xl mb-2">📅</p>
-            <p>Aucun match prévu</p>
-          </div>
-        ) : (
-          matches.map(match => (
-            <div key={match.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
-              <div>
-                <p className="font-medium text-gray-800">{match.opponent}</p>
-                <p className="text-sm text-gray-500">{match.location}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-medium text-gray-800">{match.date}</p>
-                <p className="text-sm text-gray-500">{match.time}</p>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-    </Card>
-  );
-}
-
 function ClubSwitcher() {
-  const { clubs, selectedClubId, switchClub, showClubSwitcher, setShowClubSwitcher } = useApp();
-  const [showCreateClub, setShowCreateClub] = React.useState(false);
+  const { clubs, selectClub, showClubSwitcher, setShowClubSwitcher } = useApp();
 
   if (!showClubSwitcher) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl">
-        <div className="p-6 border-b">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-gray-800">Mes clubs</h2>
-            <button
-              onClick={() => setShowClubSwitcher(false)}
-              className="text-gray-500 hover:text-gray-700 text-2xl"
-            >
-              ×
-            </button>
-          </div>
-          <p className="text-sm text-gray-600 mt-1">Sélectionnez le club que vous souhaitez gérer</p>
-        </div>
-
-        <div className="p-6 grid gap-4">
-          {clubs.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <p className="text-4xl mb-2">🏢</p>
-              <p>Vous n'êtes membre d'aucun club</p>
-              <Button variant="primary" className="mt-4" onClick={() => setShowCreateClub(true)}>
-              Créer mon premier club
-              </Button>
+    <Modal
+      isOpen={showClubSwitcher}
+      onClose={() => setShowClubSwitcher(false)}
+      title="Choisir un club"
+    >
+      <div className="space-y-3">
+        {clubs.map(club => (
+          <button
+            key={club.id}
+            onClick={() => {
+              selectClub(club.id);
+              setShowClubSwitcher(false);
+            }}
+            className="w-full p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all text-left"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-2xl">
+                🏉
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-800">{club.name}</h3>
+                <p className="text-sm text-gray-600">{club.sport} • {club.city}</p>
+              </div>
             </div>
-          ) : (
-            clubs.map(club => (
-              <button
-                key={club.id}
-                onClick={() => switchClub(club.id)}
-                className={`flex items-center gap-4 p-4 rounded-xl border-2 transition-all ${
-                  selectedClubId === club.id
-                    ? 'border-blue-600 bg-blue-50'
-                    : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
-                }`}
-              >
-                <div className="text-4xl">{club.logo}</div>
-                <div className="flex-1 text-left">
-                  <h3 className="font-bold text-lg text-gray-800">{club.name}</h3>
-                  <p className="text-sm text-gray-600">{club.sport} • {club.city}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant={club.membership?.role === 'admin' ? 'admin' : 'coach'}>
-                    {club.membership?.role === 'admin' ? 'Administrateur' : 'Entraîneur'}
-                  </Badge>
-                  {selectedClubId === club.id && (
-                    <span className="text-blue-600 text-xl">✓</span>
-                  )}
-                </div>
-              </button>
-            ))
-          )}
-        </div>
+          </button>
+        ))}
       </div>
-      <CreateClubModal
-  isOpen={showCreateClub}
-  onClose={() => setShowCreateClub(false)}
-  onSuccess={() => {
-    setShowClubSwitcher(false);
-    alert('Club créé avec succès !');
-  }}
-/>
-    </div>
+    </Modal>
   );
 }
 
-
-// ============================================
-// 📝 FORMULAIRES
-// ============================================
-
-function AddPlayerModal({ isOpen, onClose, onSuccess }) {
-  const { selectedClubId, selectedTeamId, playerService } = useApp();
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState('');
+function PlayerModal() {
+  const {
+    showPlayerModal,
+    setShowPlayerModal,
+    editingPlayer,
+    setEditingPlayer,
+    addPlayer,
+    updatePlayer,
+    selectedTeamId
+  } = useApp();
 
   const [formData, setFormData] = React.useState({
     name: '',
     position: '',
-    jerseyNumber: '',
-    birthDate: '',
-    status: 'active'
+    jerseyNumber: ''
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  React.useEffect(() => {
+    if (editingPlayer) {
+      setFormData(editingPlayer);
+    } else {
+      setFormData({ name: '', position: '', jerseyNumber: '' });
+    }
+  }, [editingPlayer, showPlayerModal]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      // Validation
-      if (!formData.name || !formData.position) {
-        throw new Error('Le nom et le poste sont obligatoires');
-      }
-
-      // Créer le joueur dans Firestore
-      await playerService.create(selectedClubId, selectedTeamId, {
-        name: formData.name,
-        position: formData.position,
-        jerseyNumber: formData.jerseyNumber ? parseInt(formData.jerseyNumber) : null,
-        birthDate: formData.birthDate || null,
-        status: formData.status,
-        stats: {
-          tries: 0,
-          tackles: 0,
-          attendance: 0
-        }
+    
+    if (editingPlayer) {
+      await updatePlayer(editingPlayer.id, formData);
+    } else {
+      await addPlayer({
+        ...formData,
+        teamId: selectedTeamId
       });
-
-      // Succès
-      onSuccess?.();
-      onClose();
-      
-      // Reset form
-      setFormData({
-        name: '',
-        position: '',
-        jerseyNumber: '',
-        birthDate: '',
-        status: 'active'
-      });
-
-    } catch (err) {
-      setError(err.message || 'Erreur lors de l\'ajout du joueur');
-    } finally {
-      setLoading(false);
     }
+    
+    setShowPlayerModal(false);
+    setEditingPlayer(null);
   };
 
-  if (!isOpen) return null;
+  const handleClose = () => {
+    setShowPlayerModal(false);
+    setEditingPlayer(null);
+  };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Ajouter un joueur">
+    <Modal
+      isOpen={showPlayerModal}
+      onClose={handleClose}
+      title={editingPlayer ? 'Modifier le joueur' : 'Ajouter un joueur'}
+    >
       <form onSubmit={handleSubmit}>
         <Input
-          label="Nom complet *"
-          name="name"
+          label="Nom complet"
           value={formData.name}
-          onChange={handleChange}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           placeholder="Jean Dupont"
           required
         />
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Poste *
-          </label>
-          <select
-            name="position"
-            value={formData.position}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          >
-            <option value="">Sélectionner un poste</option>
-            <option value="Pilier">Pilier</option>
-            <option value="Talonneur">Talonneur</option>
-            <option value="Deuxième ligne">Deuxième ligne</option>
-            <option value="Troisième ligne">Troisième ligne</option>
-            <option value="Demi de mêlée">Demi de mêlée</option>
-            <option value="Demi d'ouverture">Demi d'ouverture</option>
-            <option value="Centre">Centre</option>
-            <option value="Ailier">Ailier</option>
-            <option value="Arrière">Arrière</option>
-          </select>
-        </div>
+        <Input
+          label="Position"
+          value={formData.position}
+          onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+          placeholder="Pilier"
+        />
 
         <Input
           label="Numéro de maillot"
-          name="jerseyNumber"
           type="number"
           value={formData.jerseyNumber}
-          onChange={handleChange}
+          onChange={(e) => setFormData({ ...formData, jerseyNumber: e.target.value })}
           placeholder="10"
-          min="1"
-          max="99"
         />
 
-        <Input
-          label="Date de naissance"
-          name="birthDate"
-          type="date"
-          value={formData.birthDate}
-          onChange={handleChange}
-        />
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Statut
-          </label>
-          <select
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="active">Actif</option>
-            <option value="injured">Blessé</option>
-            <option value="suspended">Suspendu</option>
-          </select>
-        </div>
-
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-600">{error}</p>
-          </div>
-        )}
-
-        <div className="flex gap-2">
-          <Button
-            type="submit"
-            disabled={loading}
-            className="flex-1"
-          >
-            {loading ? 'Ajout en cours...' : 'Ajouter le joueur'}
-          </Button>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onClose}
-            className="flex-1"
-          >
+        <div className="flex gap-3 mt-6">
+          <Button type="button" variant="secondary" onClick={handleClose} className="flex-1">
             Annuler
+          </Button>
+          <Button type="submit" className="flex-1">
+            {editingPlayer ? 'Modifier' : 'Ajouter'}
           </Button>
         </div>
       </form>
     </Modal>
   );
 }
-
-function AddMatchModal({ isOpen, onClose, onSuccess }) {
-  const { selectedClubId, selectedTeamId, matchService } = useApp();
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState('');
-
-  const [formData, setFormData] = React.useState({
-    opponent: '',
-    date: '',
-    time: '',
-    location: 'Domicile',
-    venue: '',
-    status: 'upcoming'
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      // Validation
-      if (!formData.opponent || !formData.date || !formData.time) {
-        throw new Error('L\'adversaire, la date et l\'heure sont obligatoires');
-      }
-
-      // Créer le match dans Firestore
-      await matchService.create(selectedClubId, selectedTeamId, {
-        opponent: formData.opponent,
-        date: formData.date,
-        time: formData.time,
-        location: formData.location,
-        venue: formData.venue || null,
-        status: formData.status,
-        scoreHome: null,
-        scoreAway: null
-      });
-
-      // Succès
-      onSuccess?.();
-      onClose();
-      
-      // Reset form
-      setFormData({
-        opponent: '',
-        date: '',
-        time: '',
-        location: 'Domicile',
-        venue: '',
-        status: 'upcoming'
-      });
-
-    } catch (err) {
-      setError(err.message || 'Erreur lors de l\'ajout du match');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Ajouter un match">
-      <form onSubmit={handleSubmit}>
-        <Input
-          label="Adversaire *"
-          name="opponent"
-          value={formData.opponent}
-          onChange={handleChange}
-          placeholder="RC Toulon"
-          required
-        />
-
-        <div className="grid grid-cols-2 gap-4">
-          <Input
-            label="Date *"
-            name="date"
-            type="date"
-            value={formData.date}
-            onChange={handleChange}
-            required
-          />
-
-          <Input
-            label="Heure *"
-            name="time"
-            type="time"
-            value={formData.time}
-            onChange={handleChange}
-            required
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Lieu *
-          </label>
-          <select
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          >
-            <option value="Domicile">Domicile</option>
-            <option value="Extérieur">Extérieur</option>
-            <option value="Neutre">Terrain neutre</option>
-          </select>
-        </div>
-
-        <Input
-          label="Stade / Adresse"
-          name="venue"
-          value={formData.venue}
-          onChange={handleChange}
-          placeholder="Stade Municipal"
-        />
-
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-600">{error}</p>
-          </div>
-        )}
-
-        <div className="flex gap-2">
-          <Button
-            type="submit"
-            disabled={loading}
-            className="flex-1"
-          >
-            {loading ? 'Ajout en cours...' : 'Ajouter le match'}
-          </Button>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onClose}
-            className="flex-1"
-          >
-            Annuler
-          </Button>
-        </div>
-      </form>
-    </Modal>
-  );
-}
-
-function CreateClubModal({ isOpen, onClose, onSuccess }) {
-  const { currentUser, clubService } = useApp();
-  const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState('');
-
-  const [formData, setFormData] = React.useState({
-    name: '',
-    sport: 'Rugby',
-    city: '',
-    logo: '🏉'
-  });
-
-  const logos = ['🏉', '⚽', '🏀', '🏐', '🎾', '⚾', '🏈', '🥊', '🏊'];
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      // Validation
-      if (!formData.name || !formData.sport || !formData.city) {
-        throw new Error('Tous les champs sont obligatoires');
-      }
-
-      // Créer le club dans Firestore
-      await clubService.create(
-        {
-          name: formData.name,
-          sport: formData.sport,
-          city: formData.city,
-          logo: formData.logo,
-          settings: {
-            primaryColor: '#2563eb',
-            accentColor: '#f59e0b'
-          }
-        },
-        currentUser.uid
-      );
-
-      // Succès
-      onSuccess?.();
-      onClose();
-      
-      // Reset form
-      setFormData({
-        name: '',
-        sport: 'Rugby',
-        city: '',
-        logo: '🏉'
-      });
-
-    } catch (err) {
-      setError(err.message || 'Erreur lors de la création du club');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Créer un club">
-      <form onSubmit={handleSubmit}>
-        <Input
-          label="Nom du club *"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder="ROC GIFFOIS"
-          required
-        />
-
-        <Input
-          label="Sport *"
-          name="sport"
-          value={formData.sport}
-          onChange={handleChange}
-          placeholder="Rugby"
-          required
-        />
-
-        <Input
-          label="Ville *"
-          name="city"
-          value={formData.city}
-          onChange={handleChange}
-          placeholder="Gif-sur-Yvette"
-          required
-        />
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Logo du club
-          </label>
-          <div className="grid grid-cols-9 gap-2">
-            {logos.map(logo => (
-              <button
-                key={logo}
-                type="button"
-                onClick={() => setFormData(prev => ({ ...prev, logo }))}
-                className={`text-3xl p-2 rounded-lg border-2 transition-all ${
-                  formData.logo === logo
-                    ? 'border-blue-600 bg-blue-50'
-                    : 'border-gray-200 hover:border-blue-300'
-                }`}
-              >
-                {logo}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-600">{error}</p>
-          </div>
-        )}
-
-        <div className="flex gap-2">
-          <Button
-            type="submit"
-            disabled={loading}
-            className="flex-1"
-          >
-            {loading ? 'Création...' : 'Créer le club'}
-          </Button>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onClose}
-            className="flex-1"
-          >
-            Annuler
-          </Button>
-        </div>
-      </form>
-    </Modal>
-  );
-}
-
 
 // ============================================
 // 📄 PAGES
 // ============================================
 
 function DashboardPage() {
+  const { selectedTeam, players, matches, selectedClub } = useApp();
+
+  const stats = {
+    totalPlayers: players.length,
+    activePlayers: players.filter(p => p.status === 'active').length,
+    upcomingMatches: matches.filter(m => m.status === 'upcoming').length,
+    recentMatches: matches.filter(m => m.status === 'finished').slice(0, 3)
+  };
+
   return (
     <div className="space-y-6">
-      <StatsPanel />
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <PlayersList />
-        </div>
-        <div className="space-y-6">
-          <CalendarView />
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold text-gray-800">Tableau de bord</h1>
+        <p className="text-gray-600 mt-1">{selectedTeam?.name} • {selectedClub?.name}</p>
       </div>
+
+      {/* Quick stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="text-center">
+          <div className="text-4xl mb-3">👥</div>
+          <p className="text-3xl font-bold text-blue-600">{stats.totalPlayers}</p>
+          <p className="text-sm text-gray-600 mt-1">Joueurs</p>
+          <p className="text-xs text-gray-500 mt-1">{stats.activePlayers} actifs</p>
+        </Card>
+
+        <Card className="text-center">
+          <div className="text-4xl mb-3">📅</div>
+          <p className="text-3xl font-bold text-green-600">{stats.upcomingMatches}</p>
+          <p className="text-sm text-gray-600 mt-1">Matchs à venir</p>
+        </Card>
+
+        <Card className="text-center">
+          <div className="text-4xl mb-3">🏉</div>
+          <p className="text-3xl font-bold text-purple-600">{matches.length}</p>
+          <p className="text-sm text-gray-600 mt-1">Total saison</p>
+        </Card>
+      </div>
+
+      {/* Recent matches */}
+      {stats.recentMatches.length > 0 && (
+        <Card title="Derniers matchs">
+          <div className="space-y-3">
+            {stats.recentMatches.map(match => (
+              <div key={match.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                <div>
+                  <p className="font-medium text-gray-800">{match.opponent}</p>
+                  <p className="text-sm text-gray-600">{match.date}</p>
+                </div>
+                {match.scoreHome !== null && (
+                  <div className="text-xl font-bold text-blue-600">
+                    {match.scoreHome} - {match.scoreAway}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {/* Quick actions */}
+      <Card title="Actions rapides">
+        <div className="grid grid-cols-2 gap-3">
+          <Button variant="primary">➕ Nouveau match</Button>
+          <Button variant="secondary">👥 Nouveau joueur</Button>
+        </div>
+      </Card>
     </div>
   );
 }
 
 function PlayersPage() {
-  const { players, setSelectedPlayer, hasPermission, selectedTeam } = useApp();
-  const [showAddModal, setShowAddModal] = React.useState(false);
+  const { players, setShowPlayerModal, setEditingPlayer, deletePlayer, hasPermission } = useApp();
+
+  const canWrite = hasPermission('write');
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Gestion des joueurs</h1>
-          <p className="text-gray-600 mt-1">
-            {selectedTeam?.name} • {players.length} joueur{players.length > 1 ? 's' : ''}
-          </p>
+          <h1 className="text-3xl font-bold text-gray-800">Joueurs</h1>
+          <p className="text-gray-600 mt-1">{players.length} joueur(s)</p>
         </div>
-        {hasPermission('write') && (
-          <Button icon="➕" onClick={() => setShowAddModal(true)}>
-            Ajouter un joueur
+        {canWrite && (
+          <Button onClick={() => setShowPlayerModal(true)}>
+            ➕ Ajouter un joueur
           </Button>
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {players.length === 0 ? (
-          <Card className="col-span-full">
-            <div className="text-center py-12 text-gray-500">
-              <p className="text-6xl mb-4">👥</p>
-              <p className="text-xl font-semibold mb-2">Aucun joueur</p>
-              <p className="text-gray-600 mb-4">Commencez par ajouter des joueurs à cette équipe</p>
-              {hasPermission('write') && (
-                <Button onClick={() => alert('Ajouter un joueur - À implémenter')}>
-                  Ajouter le premier joueur
-                </Button>
-              )}
-            </div>
-          </Card>
-        ) : (
-          players.map(player => (
-            <Card 
-              key={player.id} 
-              className="hover:shadow-lg transition-all cursor-pointer"
-              onClick={() => setSelectedPlayer(player)}
-            >
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-md">
-                  {player.name?.split(' ').map(n => n[0]).join('') || '??'}
+      {players.length === 0 ? (
+        <Card>
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">👥</div>
+            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+              Aucun joueur
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Commencez par ajouter vos premiers joueurs
+            </p>
+            {canWrite && (
+              <Button onClick={() => setShowPlayerModal(true)}>
+                ➕ Ajouter un joueur
+              </Button>
+            )}
+          </div>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {players.map(player => (
+            <Card key={player.id}>
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span className="text-2xl">👤</span>
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-800">{player.name}</h3>
+                    {player.position && (
+                      <p className="text-sm text-gray-600">{player.position}</p>
+                    )}
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-lg text-gray-800">{player.name}</h3>
-                  <p className="text-sm text-gray-600">{player.position}</p>
-                  {player.jerseyNumber && (
-                    <p className="text-xs text-gray-500">N° {player.jerseyNumber}</p>
-                  )}
-                </div>
-                <Badge variant={player.status === 'active' ? 'success' : 'warning'}>
-                  {player.status === 'active' ? 'Actif' : 'Blessé'}
-                </Badge>
+                {player.jerseyNumber && (
+                  <Badge variant="info">#{player.jerseyNumber}</Badge>
+                )}
               </div>
 
-              <div className="grid grid-cols-3 gap-2 pt-3 border-t">
-                <div className="text-center">
-                  <p className="text-xs text-gray-600">Essais</p>
-                  <p className="text-lg font-bold text-blue-600">{player.stats?.tries || 0}</p>
+              {canWrite && (
+                <div className="flex gap-2 mt-4">
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => {
+                      setEditingPlayer(player);
+                      setShowPlayerModal(true);
+                    }}
+                    className="flex-1"
+                  >
+                    Modifier
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="danger"
+                    onClick={() => {
+                      if (confirm(`Supprimer ${player.name} ?`)) {
+                        deletePlayer(player.id);
+                      }
+                    }}
+                    className="flex-1"
+                  >
+                    Supprimer
+                  </Button>
                 </div>
-                <div className="text-center">
-                  <p className="text-xs text-gray-600">Placages</p>
-                  <p className="text-lg font-bold text-green-600">{player.stats?.tackles || 0}</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-xs text-gray-600">Présence</p>
-                  <p className="text-lg font-bold text-purple-600">{player.stats?.attendance || 0}%</p>
-                </div>
-              </div>
+              )}
             </Card>
-          ))
-        )}
-      </div>
-      {/* Modal d'ajout - ICI, AVANT LA FERMETURE */}
-      <AddPlayerModal
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onSuccess={() => {
-          alert('Joueur ajouté avec succès !');
-        }}
-      />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
 function CalendarPage() {
-  const { matches, selectedTeam, hasPermission } = useApp();
+  const { matches, hasPermission } = useApp();
   const [showAddModal, setShowAddModal] = React.useState(false);
 
   const upcomingMatches = matches.filter(m => m.status === 'upcoming');
@@ -1173,10 +623,13 @@ function CalendarPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        {/* ... */}
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">Calendrier</h1>
+          <p className="text-gray-600 mt-1">{matches.length} match(s)</p>
+        </div>
         {hasPermission('write') && (
-          <Button icon="➕" onClick={() => setShowAddModal(true)}>
-            Ajouter un match
+          <Button onClick={() => setShowAddModal(true)}>
+            ➕ Nouveau match
           </Button>
         )}
       </div>
@@ -1184,45 +637,32 @@ function CalendarPage() {
       {/* Matchs à venir */}
       <div>
         <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <span>🔜</span>
+          <span>📅</span>
           Matchs à venir ({upcomingMatches.length})
         </h2>
-        
+
         {upcomingMatches.length === 0 ? (
           <Card>
-            <div className="text-center py-8 text-gray-500">
-              <p className="text-4xl mb-2">📅</p>
-              <p>Aucun match prévu</p>
+            <div className="text-center py-8">
+              <div className="text-4xl mb-3">📅</div>
+              <p className="text-gray-600">Aucun match prévu</p>
             </div>
           </Card>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {upcomingMatches.map(match => (
-              <Card key={match.id} className="hover:shadow-lg transition-all">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-800 mb-1">
-                      {match.opponent}
-                    </h3>
-                    <p className="text-sm text-gray-600 flex items-center gap-2">
-                      <span>📍</span>
-                      {match.location} {match.venue && `• ${match.venue}`}
-                    </p>
-                  </div>
+              <Card key={match.id}>
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-lg font-bold text-gray-800">
+                    {match.opponent}
+                  </h3>
                   <Badge variant="info">À venir</Badge>
                 </div>
-
-                <div className="flex items-center gap-4 pt-3 border-t">
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <span>📅</span>
-                    <span className="font-medium">{match.date}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <span>🕐</span>
-                    <span className="font-medium">{match.time}</span>
-                  </div>
+                <div className="space-y-1 text-sm text-gray-600">
+                  <p>📅 {match.date}</p>
+                  {match.location && <p>📍 {match.location}</p>}
+                  {match.competition && <p>🏆 {match.competition}</p>}
                 </div>
-
                 {hasPermission('write') && (
                   <div className="mt-4 flex gap-2">
                     <Button size="sm" variant="secondary" className="flex-1">
@@ -1237,14 +677,6 @@ function CalendarPage() {
             ))}
           </div>
         )}
-        {/* Modal d'ajout */}
-      <AddMatchModal
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onSuccess={() => {
-          alert('Match ajouté avec succès !');
-        }}
-      />
       </div>
 
       {/* Matchs passés */}
@@ -1454,7 +886,52 @@ function AppContent() {
   );
 }
 
+// ============================================
+// 🚀 APP AVEC OPTIMISATIONS MOBILE
+// ============================================
+
 export default function App() {
+  useEffect(() => {
+    const initMobileApp = async () => {
+      if (platform.isMobile()) {
+        try {
+          // 1. Configurer la Status Bar
+          await StatusBar.setStyle({ style: Style.Dark });
+          await StatusBar.setBackgroundColor({ color: '#2563eb' });
+          
+          // 2. Initialiser le clavier
+          keyboardUtils.init();
+          
+          // 3. Initialiser le bouton retour Android
+          backButtonHandler.init();
+          
+          // 4. Ajouter classe de plateforme au body
+          document.body.classList.add(`platform-${platform.getPlatform()}`);
+          
+          // 5. Cacher le splash screen après initialisation
+          await SplashScreen.hide();
+          
+          console.log('✅ Mobile app initialized');
+          console.log('📱 Platform:', platform.getPlatform());
+        } catch (error) {
+          console.error('❌ Error initializing mobile app:', error);
+        }
+      } else {
+        console.log('🌐 App running in web browser');
+      }
+    };
+    
+    initMobileApp();
+    
+    // Cleanup
+    return () => {
+      if (platform.isMobile()) {
+        keyboardUtils.cleanup();
+        backButtonHandler.cleanup();
+      }
+    };
+  }, []);
+
   return (
     <AppProvider>
       <AppContent />

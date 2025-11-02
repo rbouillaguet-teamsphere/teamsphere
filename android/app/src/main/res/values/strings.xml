@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">teamsphere</string>
+    <string name="title_activity_main">teamsphere</string>
+    <string name="package_name">com.teamsphere.app</string>
+    <string name="custom_url_scheme">com.teamsphere.app</string>
+</resources>
