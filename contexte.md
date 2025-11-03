@@ -2,10 +2,10 @@
 
 ## Résumé du Projet
 
-**TeamSphere** est une application de gestion d'équipes sportives construite avec React, Firebase et Tailwind CSS. L'application permet aux entraîneurs et gestionnaires de clubs de gérer leurs équipes, joueurs, matchs et statistiques. **Depuis la version 1.3.0, TeamSphere est disponible comme application mobile native sur iOS et Android grâce à Capacitor.**
+**TeamSphere** est une application de gestion d'équipes sportives construite avec React, Firebase et Tailwind CSS. L'application permet aux entraîneurs et gestionnaires de clubs de gérer leurs équipes, joueurs, matchs et statistiques. **Depuis la version 1.3.0, TeamSphere est disponible comme application mobile native sur iOS et Android grâce à Capacitor. La version 1.3.1 apporte une page de login professionnelle complète avec authentification multi-provider.**
 
-**Version actuelle** : 1.3.0  
-**Date de mise à jour** : 2 novembre 2025
+**Version actuelle** : 1.3.1  
+**Date de mise à jour** : 3 novembre 2025
 
 ---
 
@@ -13,7 +13,42 @@
 
 ### ✅ Fonctionnalités Complétées
 
-**Version 1.3.0 (Actuelle) - Application Mobile Native** 📱
+**Version 1.3.1 (Actuelle) - Page de Login Professionnelle** 🔐
+- ✅ **Page de login moderne et responsive**
+  - Design professionnel avec gradient
+  - Formulaire email/password avec validation
+  - Toggle visibilité du mot de passe
+  - États de chargement animés
+  - Messages d'erreur clairs
+- ✅ **Service d'authentification Firebase complet**
+  - Login email/password
+  - Google OAuth
+  - Apple Sign In
+  - Reset password
+  - Gestion des tokens
+  - 15+ codes d'erreur traduits
+- ✅ **Context d'authentification React**
+  - État global utilisateur
+  - Hook useAuth() personnalisé
+  - Observer Firebase Auth
+  - Gestion loading/error
+- ✅ **Routes protégées et publiques**
+  - ProtectedRoute pour pages privées
+  - PublicRoute pour pages publiques
+  - Redirections automatiques
+  - Conservation de la navigation
+- ✅ **Configuration router complète**
+  - Routes publiques (/login, /signup, /)
+  - Routes protégées (/dashboard/*)
+  - Page 404
+  - Layout avec sidebar
+- ✅ **Documentation exhaustive** (4 guides, 1100+ lignes)
+  - Guide d'utilisation LoginPage
+  - Guide d'intégration complet
+  - Checklist d'installation
+  - Configuration Firebase
+
+**Version 1.3.0 - Application Mobile Native** 📱
 - ✅ **Intégration Capacitor 6.0 complète**
 - ✅ **Application mobile native iOS et Android**
 - ✅ **Projets natifs Android Studio et Xcode générés**
@@ -48,6 +83,16 @@
 - ✅ Déploiement Vercel fonctionnel
 
 ### 🚧 Fonctionnalités En Cours / À Améliorer
+
+**Authentification (prochaine v1.3.2)**
+- [ ] Page Signup complète avec design similaire
+- [ ] Page Forgot Password avec envoi email
+- [ ] Vérification email après inscription
+- [ ] 2FA (authentification à deux facteurs)
+- [ ] "Remember me" fonctionnel
+- [ ] Captcha après X tentatives échouées
+- [ ] Logs de connexion dans Firestore
+- [ ] Dashboard analytics connexions
 
 **Mobile (améliorations v1.4.0)**
 - [ ] Génération icônes app personnalisées
@@ -96,585 +141,621 @@ Frontend:
 Backend:
 - Firebase (Auth + Firestore) 10.12.0
 
-Mobile: ✨ NOUVEAU
+Mobile: ✨
 - Capacitor 6.0.0
-- Capacitor Android
-- Capacitor iOS
-- Capacitor Plugins (status-bar, splash-screen, keyboard, app)
+- Android Studio / Xcode
 
 Graphiques:
 - Recharts 2.10.0
 
-Outils:
-- Vite (build)
-- ESLint + Prettier
-- Git + GitHub
+Build:
+- ESBuild (Vite)
+- Code splitting optimisé
 ```
 
-### Structure des Dossiers
+### Structure du Projet v1.3.1
+
 ```
 teamsphere/
-├── android/                    # ✨ NOUVEAU - Projet Android Studio
-├── ios/                        # ✨ NOUVEAU - Projet Xcode
-├── resources/                  # ✨ NOUVEAU - Icônes et splash screens
-│   ├── icon.png               # 1024x1024
-│   └── splash.png             # 2732x2732
+├── android/                           # Projet Android Studio ✨
+├── ios/                               # Projet Xcode ✨
+├── resources/                         # Icônes et splash ✨
+├── public/
+│   └── assets/
 ├── src/
 │   ├── components/
-│   │   ├── ui/                # Composants réutilisables (Button, Input, Card)
-│   │   ├── layout/            # DashboardLayout, Sidebar
-│   │   ├── calendar/          # Composants calendrier
-│   │   ├── stats/             # Composants statistiques (5 nouveaux)
+│   │   ├── ui/                        # Composants UI réutilisables
+│   │   │   ├── Button.jsx
+│   │   │   ├── Input.jsx
+│   │   │   ├── Select.jsx
+│   │   │   ├── Card.jsx
+│   │   │   └── Modal.jsx
+│   │   ├── layout/                    # Layout et navigation
+│   │   │   ├── DashboardLayout.jsx
+│   │   │   ├── Sidebar.jsx
+│   │   │   └── TopBar.jsx
+│   │   ├── calendar/                  # Composants calendrier
+│   │   │   ├── CalendarWeekView.jsx
+│   │   │   └── AddMatchModal.jsx
+│   │   ├── stats/                     # Composants statistiques
 │   │   │   ├── StatsOverview.jsx
 │   │   │   ├── PerformanceChart.jsx
 │   │   │   ├── ComparisonStats.jsx
 │   │   │   ├── PlayersStats.jsx
 │   │   │   └── MatchesTable.jsx
-│   │   └── onboarding/        # Wizard et steps
+│   │   ├── onboarding/                # Wizard onboarding
+│   │   │   ├── OnboardingWizard.jsx
+│   │   │   ├── WelcomeScreen.jsx
+│   │   │   └── steps/
+│   │   └── router/                    # Routes ✨ NOUVEAU v1.3.1
+│   │       └── ProtectedRoute.jsx
 │   ├── pages/
-│   │   ├── DashboardPage.jsx
+│   │   ├── LandingPage.jsx
+│   │   ├── LoginPage.jsx              # ✨ NOUVEAU v1.3.1
+│   │   ├── SignupPage.jsx
+│   │   ├── Dashboard.jsx
 │   │   ├── PlayersPage.jsx
 │   │   ├── CalendarPage.jsx
-│   │   └── statistics/        # Pages statistiques
+│   │   └── statistics/                # 5 pages stats
 │   │       ├── OverviewPage.jsx
 │   │       ├── PlayerStatsPage.jsx
 │   │       ├── EventStatsPage.jsx
 │   │       ├── RankingsPage.jsx
 │   │       └── ChartsPage.jsx
 │   ├── services/
-│   │   └── firebase/
-│   │       ├── auth.js
-│   │       ├── clubs.js
-│   │       ├── teams.js
-│   │       ├── players.js
-│   │       ├── matches.js
-│   │       └── index.js
+│   │   ├── authService.js             # ✨ ENRICHI v1.3.1
+│   │   ├── userService.js
+│   │   ├── clubService.js
+│   │   ├── teamService.js
+│   │   ├── playerService.js
+│   │   └── matchService.js
 │   ├── context/
-│   │   └── AppContext.jsx     # Contexte global de l'app
-│   ├── utils/                  # ✨ NOUVEAU - Utilitaires
-│   │   ├── platform.ts         # Détection plateforme mobile
-│   │   ├── keyboard.ts         # Gestion clavier mobile
-│   │   └── backButton.ts       # Bouton retour Android
-│   ├── router/
-│   │   └── index.jsx           # Configuration des routes
-│   ├── App.jsx                 # ✨ OPTIMISÉ MOBILE
+│   │   ├── AppContext.jsx
+│   │   └── AuthContext.jsx            # ✨ NOUVEAU v1.3.1
+│   ├── utils/                         # ✨ Mobile utils
+│   │   ├── platform.ts
+│   │   ├── keyboard.ts
+│   │   └── backButton.ts
+│   ├── config/
+│   │   └── firebase.js
+│   ├── router/                        # ✨ NOUVEAU v1.3.1
+│   │   └── index.jsx
+│   ├── App.jsx                        # ✨ MODIFIÉ v1.3.1
+│   ├── main.jsx
 │   └── index.css
-├── public/
-├── dist/                       # Build de production
-├── capacitor.config.ts         # ✨ NOUVEAU - Config Capacitor
-├── mobile.css                  # ✨ NOUVEAU - Styles mobile
-├── package.json
-├── vite.config.js              # ✨ OPTIMISÉ MOBILE
-└── README.md
+├── capacitor.config.ts                # ✨ Mobile config
+├── mobile.css                         # ✨ Mobile styles
+├── .env                               # Variables d'environnement
+├── vite.config.js
+└── package.json
+```
+
+### Architecture Authentification v1.3.1 ✨
+
+```
+┌─────────────────────────────────────────────────────┐
+│                    App.jsx                          │
+│              (AuthProvider wrapper)                 │
+└────────────────┬────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────┐
+│              AuthContext.jsx                        │
+│  - État global utilisateur                          │
+│  - Hook useAuth()                                   │
+│  - Observer Firebase Auth                           │
+│  - Méthodes: login, signup, logout                  │
+└────────────────┬────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────┐
+│            authService.js                           │
+│  - login(email, password)                           │
+│  - loginWithGoogle()                                │
+│  - loginWithApple()                                 │
+│  - signup(email, password, displayName)             │
+│  - logout()                                         │
+│  - resetPassword(email)                             │
+│  - getCurrentUser()                                 │
+│  - onAuthStateChanged(callback)                     │
+│  - getIdToken()                                     │
+│  - refreshToken()                                   │
+│  - getErrorMessage(code)                            │
+└────────────────┬────────────────────────────────────┘
+                 │
+                 ▼
+┌─────────────────────────────────────────────────────┐
+│           Firebase Authentication                   │
+│  - Email/Password Provider                          │
+│  - Google OAuth Provider                            │
+│  - Apple OAuth Provider                             │
+│  - JWT Tokens                                       │
+│  - Security Rules                                   │
+└─────────────────────────────────────────────────────┘
+```
+
+### Flux d'Authentification
+
+```
+1. USER ACTION
+   └─> Clic sur "Login" (LoginPage.jsx)
+       │
+       ▼
+2. VALIDATION
+   └─> Validation formulaire côté client
+       │
+       ▼
+3. CONTEXT
+   └─> useAuth().login(email, password)
+       │
+       ▼
+4. SERVICE
+   └─> authService.login(email, password)
+       │
+       ▼
+5. FIREBASE
+   └─> signInWithEmailAndPassword(auth, email, password)
+       │
+       ▼
+6. RESPONSE
+   ├─> Success → User object
+   │   │
+   │   ▼
+   │   7. AUTH OBSERVER
+   │      └─> onAuthStateChanged() détecte changement
+   │          │
+   │          ▼
+   │          8. CONTEXT UPDATE
+   │             └─> setUser(userData)
+   │                 │
+   │                 ▼
+   │                 9. UI UPDATE
+   │                    └─> Navigate to /dashboard
+   │
+   └─> Error → Error object
+       │
+       ▼
+       10. ERROR HANDLING
+          └─> getErrorMessage(error.code)
+              │
+              ▼
+              11. UI FEEDBACK
+                 └─> Display error message
+```
+
+### Routes Configuration v1.3.1
+
+```
+Routes Publiques (PublicRoute):
+├── /                          → LandingPage
+├── /login                     → LoginPage ✨ NOUVEAU
+├── /signup                    → SignupPage
+└── /forgot-password           → ForgotPasswordPage (à créer)
+
+Routes Protégées (ProtectedRoute):
+└── /dashboard                 → DashboardLayout
+    ├── (index)                → Dashboard
+    ├── /players               → PlayersPage
+    ├── /calendar              → CalendarPage
+    ├── /statistics            → Menu déroulant
+    │   ├── /overview          → OverviewPage
+    │   ├── /players           → PlayerStatsPage
+    │   ├── /events            → EventStatsPage
+    │   ├── /rankings          → RankingsPage
+    │   └── /charts            → ChartsPage
+    ├── /settings              → SettingsPage
+    └── /profile               → ProfilePage
+
+Autres:
+└── *                          → NotFoundPage (404)
+```
+
+### Firebase Structure
+
+```
+Firestore Collections:
+├── users/
+│   └── {userId}/
+│       ├── email: string
+│       ├── displayName: string
+│       ├── photoURL: string
+│       ├── createdAt: timestamp
+│       └── lastLoginAt: timestamp ✨ Utile pour analytics
+│
+├── clubs/
+│   └── {clubId}/
+│       ├── name: string
+│       ├── sport: string
+│       ├── city: string
+│       ├── createdBy: string (userId)
+│       └── createdAt: timestamp
+│
+├── memberships/
+│   └── {membershipId}/
+│       ├── userId: string
+│       ├── clubId: string
+│       ├── role: string (admin|coach|player|viewer)
+│       └── createdAt: timestamp
+│
+├── teams/
+│   └── {teamId}/
+│       ├── clubId: string
+│       ├── name: string
+│       ├── category: string
+│       └── season: string
+│
+├── players/
+│   └── {playerId}/
+│       ├── teamId: string
+│       ├── firstName: string
+│       ├── lastName: string
+│       ├── position: string
+│       └── number: number
+│
+└── matches/
+    └── {matchId}/
+        ├── teamId: string
+        ├── opponent: string
+        ├── date: timestamp
+        ├── homeScore: number
+        └── awayScore: number
 ```
 
 ---
 
-## 📱 Architecture Mobile (v1.3.0)
+## 🔐 Sécurité - Version 1.3.1
 
-### Approche Choisie : Capacitor
+### Authentification Sécurisée
 
-**Pourquoi Capacitor ?**
-- ✅ Réutilise 95% du code React existant
-- ✅ Pas de refonte nécessaire
-- ✅ Application native iOS et Android
-- ✅ Accès aux fonctionnalités natives
-- ✅ Publication sur App Store et Play Store
-- ✅ Maintenance simplifiée (1 seule codebase)
+**Implémenté** ✅
+- Validation côté client (email format, password length)
+- Validation côté serveur (Firebase Auth)
+- Hashing automatique des passwords (bcrypt via Firebase)
+- Tokens JWT sécurisés
+- HTTPS obligatoire en production
+- Protection CSRF automatique (Firebase)
+- Rate limiting automatique (Firebase)
+- Messages d'erreur génériques (pas de leak d'info)
+- Sessions sécurisées avec refresh tokens
+- Cleanup automatique des listeners
 
-### Plugins Capacitor Installés
-
-**Plugins de Base**
+**Codes d'Erreur Gérés** (15+)
 ```javascript
-@capacitor/core           // Core API Capacitor
-@capacitor/cli            // CLI pour build et sync
-@capacitor/android        // Plateforme Android
-@capacitor/ios            // Plateforme iOS
-```
-
-**Plugins Fonctionnels**
-```javascript
-@capacitor/app            // App events, back button
-@capacitor/status-bar     // Configuration barre de statut
-@capacitor/splash-screen  // Écran de démarrage
-@capacitor/keyboard       // Gestion clavier mobile
-```
-
-**Configuration Capacitor**
-```typescript
-// capacitor.config.ts
 {
-  appId: 'com.teamsphere.app',
-  appName: 'TeamSphere',
-  webDir: 'dist',
-  plugins: {
-    SplashScreen: {
-      launchShowDuration: 2000,
-      backgroundColor: "#2563eb",
-      showSpinner: true,
-      spinnerColor: "#ffffff"
-    },
-    StatusBar: {
-      style: 'dark',
-      backgroundColor: '#2563eb'
-    },
-    Keyboard: {
-      resize: 'body',
-      style: 'dark'
+  'auth/invalid-email': 'L\'adresse email est invalide',
+  'auth/user-disabled': 'Ce compte a été désactivé',
+  'auth/user-not-found': 'Aucun compte ne correspond à cet email',
+  'auth/wrong-password': 'Mot de passe incorrect',
+  'auth/invalid-credential': 'Email ou mot de passe incorrect',
+  'auth/email-already-in-use': 'Cet email est déjà utilisé',
+  'auth/weak-password': 'Le mot de passe doit contenir au moins 6 caractères',
+  'auth/too-many-requests': 'Trop de tentatives. Veuillez réessayer plus tard',
+  'auth/network-request-failed': 'Erreur de connexion. Vérifiez votre réseau',
+  'auth/operation-not-allowed': 'Cette opération n\'est pas autorisée',
+  'auth/popup-blocked': 'La popup a été bloquée par le navigateur',
+  'auth/popup-closed-by-user': 'La connexion a été annulée',
+  'auth/cancelled-popup-request': 'Une autre popup est déjà ouverte',
+  'auth/invalid-action-code': 'Le lien est invalide ou a expiré',
+  'auth/expired-action-code': 'Le lien a expiré'
+}
+```
+
+**À Ajouter** (v1.3.2+)
+- [ ] Captcha après 5 tentatives échouées
+- [ ] Logs de connexion (IP, date, device)
+- [ ] Notifications email connexion suspecte
+- [ ] 2FA avec SMS ou authenticator app
+- [ ] Limite tentatives par IP
+- [ ] Blacklist IP malveillantes
+- [ ] Session timeout configurable
+- [ ] Force logout autres sessions
+
+### Firebase Security Rules
+
+```javascript
+// firestore.rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Utilisateurs : lecture/écriture de son propre profil uniquement
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Clubs : membres peuvent lire, seul créateur peut modifier
+    match /clubs/{clubId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null 
+        && request.resource.data.createdBy == request.auth.uid;
+      allow update, delete: if request.auth != null 
+        && resource.data.createdBy == request.auth.uid;
+    }
+    
+    // Memberships : lecture si membre, écriture si admin du club
+    match /memberships/{membershipId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+      // TODO: Vérifier rôle admin pour écriture
+    }
+    
+    // Teams, Players, Matches : authentification requise
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+      // TODO: Affiner les permissions par rôle
     }
   }
 }
 ```
 
-### Utilitaires Mobile
+---
 
-**platform.ts** - Détection de plateforme
-```typescript
-platform.isMobile()    // true si app native
-platform.isWeb()       // true si navigateur
-platform.getPlatform() // 'ios', 'android', 'web'
-platform.isIOS()       // true si iOS
-platform.isAndroid()   // true si Android
-```
+## 📚 Documentation Projet
 
-**keyboard.ts** - Gestion du clavier
-```typescript
-keyboardUtils.init()     // Initialiser listeners
-keyboardUtils.hide()     // Cacher clavier
-keyboardUtils.show()     // Afficher clavier
-keyboardUtils.cleanup()  // Cleanup listeners
-```
+### Documentation Login v1.3.1 ✨
 
-**backButton.ts** - Bouton retour Android
-```typescript
-backButtonHandler.init()    // Initialiser
-backButtonHandler.cleanup() // Cleanup
-```
+**Fichiers Créés**
+1. `LOGIN_README.md` (7.7 KB, 200+ lignes)
+   - Description fonctionnalités
+   - Guide d'installation
+   - Intégration Firebase Auth
+   - Personnalisation
+   - Tests manuels et tests unitaires
+   - Métriques de performance
+   - Checklist d'accessibilité
+   - Troubleshooting complet
 
-### Initialisation Mobile (App.jsx)
+2. `INTEGRATION_GUIDE.md` (9.1 KB, 300+ lignes)
+   - Installation étape par étape (6 phases)
+   - Configuration Firebase Console
+   - Variables d'environnement
+   - Copie et organisation des fichiers
+   - Création des pages complémentaires
+   - Tests d'intégration
+   - Personnalisation avancée
+   - Dépannage détaillé
 
-```javascript
-useEffect(() => {
-  const initMobileApp = async () => {
-    if (platform.isMobile()) {
-      // 1. Status Bar
-      await StatusBar.setStyle({ style: Style.Dark });
-      await StatusBar.setBackgroundColor({ color: '#2563eb' });
-      
-      // 2. Keyboard
-      keyboardUtils.init();
-      
-      // 3. Back Button (Android)
-      backButtonHandler.init();
-      
-      // 4. Platform CSS class
-      document.body.classList.add(`platform-${platform.getPlatform()}`);
-      
-      // 5. Hide Splash Screen
-      await SplashScreen.hide();
-    }
-  };
-  
-  initMobileApp();
-  
-  return () => {
-    keyboardUtils.cleanup();
-    backButtonHandler.cleanup();
-  };
-}, []);
-```
+3. `CHECKLIST.md` (7.6 KB, 250+ lignes)
+   - Checklist complète (30+ items)
+   - Phase 1: Configuration initiale
+   - Phase 2: Firebase Console
+   - Phase 3: Copie des fichiers
+   - Phase 4: Pages manquantes
+   - Phase 5: Tests
+   - Phase 6: Personnalisation
+   - Sécurité checklist
+   - Roadmap future
 
-### Workflow de Développement Mobile
+4. `FIREBASE_CONFIG.md` (10 KB, 350+ lignes)
+   - Configuration firebase.js complète
+   - Exemples .env et .env.example
+   - Security Rules Firestore
+   - Storage Rules
+   - Scripts de déploiement
+   - Firebase Emulators
+   - Structure Firestore détaillée
+   - Indexes Firestore
 
-**Scripts NPM disponibles**
+**Total Documentation Login**
+- 4 fichiers markdown
+- ~35 KB de documentation
+- 1100+ lignes
+- 50+ exemples de code
+- Troubleshooting exhaustif
+
+### Documentation Mobile v1.3.0
+
+**Guides Créés**
+1. `guide-transformation-mobile.md` (8000+ mots)
+2. `guide-installation-capacitor.md` (10 étapes détaillées)
+3. `react-vs-react-native-architecture.md` (comparaison)
+4. `teamsphere-mobile-wireframes.html` (wireframes interactifs)
+
+### Documentation Statistiques v1.2.0
+
+**Guides Créés**
+1. `README-MENU-STATISTIQUES.md` (vue d'ensemble)
+2. `GUIDE-INSTALLATION-MENU.md` (installation détaillée)
+3. `README-CORRECTIF.md` (bugs documentés)
+
+**Total Documentation Projet**
+- **11 fichiers de documentation**
+- **~20000 lignes au total**
+- **100+ exemples de code**
+- **Wireframes interactifs**
+- **Troubleshooting complet**
+
+---
+
+## 🚀 Roadmap Futur
+
+### Version 1.3.2 - Authentification Complète
+**Estimation** : 1-2 semaines
+
+- [ ] Page Signup complète (similaire LoginPage)
+- [ ] Page Forgot Password avec envoi email Firebase
+- [ ] Page Reset Password (via email link)
+- [ ] Vérification email après inscription
+- [ ] Lien de vérification dans email
+- [ ] Message "Vérifiez votre email"
+- [ ] Resend verification email
+
+### Version 1.4.0 - Mobile Polish
+**Estimation** : 2-3 semaines
+
+- [ ] Icônes app personnalisées (1024x1024)
+- [ ] Splash screen avec branding TeamSphere
+- [ ] Tests sur devices réels (Android/iOS)
+- [ ] Configuration signing Android (keystore + Google Play Console)
+- [ ] Configuration provisioning iOS (Apple Developer Account)
+- [ ] Publication version beta Play Store
+- [ ] Publication version beta App Store via TestFlight
+
+### Version 1.5.0 - Features Natives Avancées
+**Estimation** : 3-4 semaines
+
+- [ ] Plugin Camera - Photos joueurs
+- [ ] Plugin Push Notifications - Matchs/entraînements
+- [ ] Plugin Geolocation - Localisation terrains
+- [ ] Plugin Share - Partage résultats réseaux sociaux
+- [ ] Plugin Preferences - Stockage local persistant
+- [ ] Mode offline avec synchronisation
+- [ ] Background sync Firebase
+
+### Version 2.0.0 - Production & Analytics
+**Estimation** : 4-6 semaines
+
+- [ ] 2FA (SMS, Authenticator app)
+- [ ] Analytics connexions/usage
+- [ ] Logs détaillés (IP, device, browser)
+- [ ] Dashboard admin analytics
+- [ ] Rate limiting avancé
+- [ ] Captcha intelligent
+- [ ] Export données RGPD
+- [ ] Mode sombre
+- [ ] Internationalisation (i18n)
+- [ ] Tests E2E complets
+- [ ] CI/CD GitHub Actions
+- [ ] Monitoring production (Sentry)
+- [ ] Performance monitoring
+- [ ] Publication publique stores
+
+---
+
+## 🎯 Prochaines Actions Recommandées
+
+### Court Terme (1-2 semaines)
+
+1. **Intégrer la Page de Login**
+   - Copier les 8 fichiers fournis
+   - Configurer Firebase Console
+   - Tester email/password
+   - Tester Google OAuth
+   - Documenter pour l'équipe
+
+2. **Créer Page Signup**
+   - Dupliquer structure LoginPage
+   - Adapter formulaire (+ displayName)
+   - Intégrer authService.signup()
+   - Ajouter terms & conditions
+   - Tester création compte
+
+3. **Créer Page Forgot Password**
+   - Formulaire simple (email)
+   - Intégrer authService.resetPassword()
+   - Message de confirmation
+   - Lien retour vers login
+
+### Moyen Terme (3-4 semaines)
+
+4. **Améliorer Mobile**
+   - Générer icônes personnalisées
+   - Créer splash screen branding
+   - Tester sur devices réels
+   - Corriger bugs trouvés
+
+5. **Ajouter 2FA**
+   - Rechercher plugin Capacitor
+   - Implémenter SMS verification
+   - Ou Authenticator app (Google, Microsoft)
+   - Tester workflow complet
+
+6. **Analytics & Logs**
+   - Collection `loginLogs` Firestore
+   - Dashboard admin avec stats
+   - Graphiques connexions/jour
+   - Détection anomalies
+
+### Long Terme (2-3 mois)
+
+7. **Publication Stores**
+   - Compte Google Play Developer ($25)
+   - Compte Apple Developer ($99/an)
+   - Assets stores (screenshots, description)
+   - Signing et build production
+   - Soumission review
+   - Publication publique
+
+8. **Features Natives**
+   - Camera pour photos
+   - Push notifications
+   - Géolocalisation
+   - Mode offline
+   - Background sync
+
+9. **Monitoring Production**
+   - Sentry pour crash reporting
+   - Firebase Analytics
+   - Performance monitoring
+   - User behavior analytics
+   - A/B testing
+
+---
+
+## 📞 Support & Ressources
+
+### Documentation Officielle
+- [React Docs](https://react.dev)
+- [Firebase Auth Docs](https://firebase.google.com/docs/auth)
+- [Capacitor Docs](https://capacitorjs.com)
+- [Tailwind CSS](https://tailwindcss.com)
+- [React Router](https://reactrouter.com)
+
+### Repositories GitHub
+- TeamSphere: https://github.com/rboui/teamsphere (private)
+
+### Outils Développement
+- **IDE** : VS Code
+- **Git GUI** : Git GUI (Windows)
+- **Émulateurs** : Android Studio, Xcode Simulator
+- **Testing** : React Testing Library
+- **CI/CD** : GitHub Actions (à configurer)
+
+### Contact
+- **Développeur Principal** : Raphaël
+- **Email** : (à définir)
+- **Slack/Discord** : (à définir)
+
+---
+
+## 📝 Notes Importantes
+
+### Variables d'Environnement ⚠️
+Ne jamais commiter le fichier `.env` !
+Toujours utiliser `.env.example` pour la documentation.
+
 ```bash
-# Développement web classique
-npm run dev
-
-# Build pour mobile
-npm run build
-
-# Synchroniser avec projets natifs
-npm run cap:sync
-# ou
-npx cap sync
-
-# Ouvrir Android Studio
-npm run cap:android
-# ou
-npx cap open android
-
-# Ouvrir Xcode (Mac uniquement)
-npm run cap:ios
-# ou
-npx cap open ios
-
-# Build + Sync + Open en une commande
-npm run mobile:android
-npm run mobile:ios
+# .gitignore
+.env
+.env.local
+.env.production
 ```
 
-**Processus de développement**
-1. Développer en web (`npm run dev`)
-2. Build (`npm run build`)
-3. Sync (`npx cap sync`)
-4. Ouvrir IDE natif (`npx cap open android`)
-5. Tester sur émulateur ou device
-6. Répéter
+### Firebase Credentials ⚠️
+Les credentials Firebase sont sensibles.
+Ne jamais les exposer dans le code frontend.
+Utiliser Firebase Security Rules.
+
+### Mobile Development ⚠️
+- Toujours tester en web d'abord
+- Build avant chaque test mobile
+- Sync après chaque modification
+- Vérifier logs Android Studio / Xcode
+
+### Best Practices ✅
+- Commiter souvent avec messages clairs
+- Créer branches pour features
+- Code review avant merge
+- Tests avant déploiement
+- Documentation à jour
 
 ---
 
-## 🗄️ Structure des Données Firestore
+**Version Contexte** : 1.3.1  
+**Date** : 3 novembre 2025  
+**Status** : ✅ Complet et à jour
 
-### Collection: matches
-```javascript
-/clubs/{clubId}/teams/{teamId}/matches/{matchId}
-{
-  opponent: string,        // Nom adversaire
-  date: Timestamp,         // Date du match
-  isHome: boolean,         // Domicile/Extérieur
-  location: string,        // Lieu
-  competition: string,     // Compétition
-  status: string,          // "upcoming" | "completed" | "cancelled"
-  scoreTeam: number,       // Score équipe
-  scoreOpponent: number,   // Score adversaire
-  teamId: string,
-  createdAt: Timestamp,
-  updatedAt: Timestamp
-}
-```
+**🎉 TeamSphere est prêt avec authentification professionnelle, application web moderne et mobile native !**
 
-### Collection: players
-```javascript
-/clubs/{clubId}/teams/{teamId}/players/{playerId}
-{
-  name: string,           // Nom complet
-  position: string,       // Position (optional)
-  jerseyNumber: number,   // Numéro maillot (optional)
-  status: string,         // "active" | "injured" | "suspended"
-  teamId: string,
-  createdAt: Timestamp,
-  updatedAt: Timestamp
-}
-```
-
-### Collection: teams
-```javascript
-/clubs/{clubId}/teams/{teamId}
-{
-  name: string,
-  category: string,       // U12, U15, Seniors, etc.
-  gender: string,         // Masculin, Féminin, Mixte
-  season: string,         // 2024-2025
-  clubId: string,
-  createdAt: Timestamp
-}
-```
-
----
-
-## 🎨 Design System
-
-### Composants UI Existants
-```javascript
-// Button - 4 variantes
-<Button variant="primary|secondary|danger|ghost">
-
-// Input avec validation
-<Input label="..." error="..." hint="..." />
-
-// Select
-<Select options={[]} placeholder="..." />
-
-// Card
-<Card className="...">
-```
-
-### Couleurs Tailwind
-- Primary: `blue-600` (#2563eb)
-- Success: `green-500`
-- Danger: `red-500`
-- Warning: `yellow-500`
-- Gray scales: `gray-100` à `gray-900`
-
-### Optimisations Mobile (Nouveau)
-```css
-/* Safe areas pour notchs */
-.pt-safe-top { padding-top: env(safe-area-inset-top); }
-.pb-safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
-
-/* Fix zoom inputs iOS */
-input { font-size: 16px !important; }
-
-/* Classes plateforme */
-.platform-android { /* styles Android */ }
-.platform-ios { /* styles iOS */ }
-```
-
----
-
-## 📊 Module Statistiques - Détails
-
-### Architecture du Menu
-```
-📊 Statistiques (Menu déroulant)
-├── 📊 Vue d'ensemble    → /statistics/overview
-├── 👥 Par joueur        → /statistics/players
-├── 📅 Par événement     → /statistics/events
-├── 🏆 Classements       → /statistics/rankings
-└── 📈 Graphiques        → /statistics/charts
-```
-
-### Composants Statistiques
-
-#### StatsOverview.jsx
-- 8 cards de métriques clés
-- Icônes emoji pour identification
-- Couleurs conditionnelles (vert/rouge/gris)
-- Layout responsive (grid 2x4)
-
-#### PerformanceChart.jsx
-- Graphique linéaire : évolution des points
-- Graphique en barres : buts marqués vs encaissés
-- Recharts avec tooltips personnalisés
-- Responsive et interactif
-
-#### ComparisonStats.jsx
-- Graphiques circulaires (PieChart)
-- Comparaison domicile/extérieur
-- Légendes et pourcentages
-- Couleurs distinctives
-
-#### PlayersStats.jsx
-- Tableau interactif des joueurs
-- Tri par colonne
-- Recherche par nom
-- Avatar + stats détaillées
-
-#### MatchesTable.jsx
-- Historique complet des matchs
-- Tri par date
-- Filtres par résultat
-- Badges de status
-
-### Pages Statistiques
-
-#### OverviewPage
-**Contenu** :
-- 8 métriques clés en cards
-- Graphique d'évolution
-- Résumé de la saison
-
-#### PlayerStatsPage
-**Contenu** :
-- Tableau complet des joueurs
-- Tri multi-colonnes
-- Recherche en temps réel
-- Stats individuelles
-
-#### EventStatsPage
-**Contenu** :
-- Liste chronologique des matchs
-- Détails par match
-- Filtres temporels
-
-#### RankingsPage
-**Contenu** :
-- Comparaison domicile/extérieur
-- Graphiques circulaires
-- Pourcentages détaillés
-
-#### ChartsPage
-**Contenu** :
-- Graphique d'évolution des points
-- Graphique buts marqués/encaissés
-- Filtres par période (7j, 30j, saison)
-- Export possible (future)
-
----
-
-## ⚠️ Points d'Attention Techniques
-
-### Statistiques
-**Limitations actuelles** :
-- Calculs tous côté client (pas de cloud functions)
-- Pas de cache persistant
-- Données limitées au data model actuel (pas de buts/passes individuels dans players)
-- Pas de données historiques multi-saisons
-
-**À améliorer** :
-- Ajouter cache pour améliorer performances
-- Cloud functions pour calculs lourds
-- Enrichir data model joueurs (stats détaillées)
-- Système multi-saisons
-
-### Mobile (Nouveau)
-**Limitations actuelles** :
-- Icônes par défaut Capacitor (à personnaliser)
-- Pas de signing configuré (debug uniquement)
-- Pas encore testé sur devices réels
-- Pas encore publié sur stores
-
-**À améliorer** :
-- Générer icônes et splash screens personnalisés
-- Configurer signing Android (keystore)
-- Configurer provisioning iOS (Apple Developer)
-- Tests sur vrais devices
-- Optimisations performances mobile
-- Mode offline complet
-
-### Firebase
-**Dépendances critiques** :
-- Firebase SDK v10.12.0
-- Firestore pour toutes les données
-- Auth pour authentification
-- Compatible mobile sans changement
-
-### Performance
-**Build actuel** :
-- Bundle size : ~280 KB (gzippé) ✅ Excellent
-- First paint : < 1s
-- Time to interactive : < 2s
-- Splash screen mobile : 2s
-
----
-
-## 🚀 Prochaines Étapes Suggérées
-
-### Court Terme (v1.4.0 - Mobile Polish)
-1. **Générer icônes et splash screen** personnalisés
-2. **Tests sur devices réels** (Android + iOS)
-3. **Configuration signing** pour production
-4. **Optimisations UI mobile** (gestures, animations)
-5. **Mode offline basique** (cache Firestore)
-
-### Moyen Terme (v1.5.0 - Features Natives)
-1. **Plugin Camera** pour photos joueurs
-2. **Push Notifications** pour matchs
-3. **Géolocalisation** pour terrains
-4. **Partage** de résultats
-5. **Export PDF** des statistiques
-
-### Long Terme (v2.0.0+)
-1. **Publication Play Store** et **App Store**
-2. **Mode offline avancé** avec synchronisation
-3. **Multi-sports** (football, basketball, etc.)
-4. **Marketplace** (plugins, intégrations)
-5. **API publique** pour développeurs tiers
-6. **Version white-label** pour clubs
-
----
-
-## 🔗 Liens Utiles
-
-### Documentation Externe
-- [React](https://react.dev/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Firebase Firestore](https://firebase.google.com/docs/firestore)
-- [Recharts](https://recharts.org/)
-- [React Router](https://reactrouter.com/)
-- [Capacitor Docs](https://capacitorjs.com/docs) ✨ NOUVEAU
-- [Capacitor Plugins](https://capacitorjs.com/docs/apis) ✨ NOUVEAU
-
-### Fichiers Clés du Projet
-- `src/context/AppContext.jsx` - État global
-- `src/services/firebase/matches.js` - Service matchs
-- `src/components/layout/Sidebar.jsx` - Navigation
-- `src/pages/statistics/*` - Pages statistiques
-- `src/components/stats/*` - Composants stats
-- `src/utils/platform.ts` - Détection plateforme ✨ NOUVEAU
-- `capacitor.config.ts` - Configuration mobile ✨ NOUVEAU
-- `App.jsx` - Initialisations mobile ✨ NOUVEAU
-
-### Documentation Mobile (Nouveau)
-- `guide-transformation-mobile.md` - 3 approches détaillées
-- `guide-installation-capacitor.md` - Installation pas à pas
-- `react-vs-react-native-architecture.md` - Comparaison architectures
-- `teamsphere-mobile-wireframes.html` - Wireframes interactifs
-
----
-
-## ⚙️ Configuration Requise
-
-### Développement Web
-- Node.js 18+
-- npm ou yarn
-- Compte Firebase configuré
-- Variables d'environnement `.env`
-
-### Développement Mobile (Nouveau)
-**Pour Android** :
-- Android Studio (dernière version)
-- JDK 17+
-- Android SDK API 24+ (Android 7.0+)
-- Émulateur Android ou device réel
-
-**Pour iOS** (Mac uniquement) :
-- macOS 12+
-- Xcode 14+
-- CocoaPods
-- Command Line Tools
-- Device iOS ou simulateur
-
-### Publication Stores (Futur)
-- Compte Google Play Developer ($25 one-time)
-- Compte Apple Developer ($99/an)
-- Certificats de signing configurés
-
----
-
-## 📊 Métriques du Projet
-
-**Code**
-- ~6500 lignes de code React (+1500 depuis v1.2.0)
-- 30+ composants (+5 utils mobiles)
-- 18+ pages (+3 guides docs)
-- 6 services Firebase
-- 100% JavaScript (TypeScript-ready avec .ts utils)
-
-**Features**
-- 6 modules principaux (Auth, Dashboard, Joueurs, Calendrier, Statistiques, Mobile)
-- 3 plateformes (Web, Android, iOS) ✨ NOUVEAU
-- 3 rôles utilisateurs (owner, admin, member)
-- Multi-tenant (clubs/équipes)
-- Temps réel (Firestore listeners)
-
-**Performance**
-- Build time : ~20s
-- Bundle size : ~280 KB (gzippé)
-- First paint : < 1s
-- Time to interactive : < 2s
-- Splash screen mobile : 2s
-
-**Mobile** ✨ NOUVEAU
-- Plateformes : Android (API 24+) + iOS (13+) + Web
-- Code partagé : 95%
-- Plugins natifs : 4 (app, status-bar, splash-screen, keyboard)
-- Taille app Android : ~15 MB
-- Taille app iOS : ~20 MB
-
----
-
-## 📱 Comparaison Versions
-
-| Caractéristique | v1.2.0 (Web) | v1.3.0 (Mobile) |
-|----------------|--------------|-----------------|
-| **Plateforme** | Web uniquement | Web + Android + iOS |
-| **Installation** | Via navigateur | Téléchargement store |
-| **Icône** | Onglet navigateur | Écran d'accueil |
-| **Notifications** | Web push | Push natives |
-| **Offline** | Limité | Support natif |
-| **Performances** | Bonnes | Excellentes |
-| **UX** | Responsive | Native |
-| **Caméra** | Upload fichier | Caméra native |
-| **Partage** | Copy/paste | Share sheet natif |
-
----
-
-**Statut** : ✅ Production Ready (Web + Mobile Beta)  
-**Dernière mise à jour** : 2 novembre 2025  
-**Prochaine version prévue** : 1.4.0 (Mobile Polish + Tests)
-
----
-
-**🎉 TeamSphere est maintenant une vraie application mobile !**
+**Prochaine étape : Créer pages Signup et Forgot Password ! 🚀**

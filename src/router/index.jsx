@@ -4,6 +4,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { useApp } from '@/context/AppContext';
 
 // Pages publiques
+import LoginPage from '@/pages/LoginPage';
 import LandingPage from '@/pages/LandingPage';
 import SignupPage from '@/pages/SignupPage';
 import WelcomeScreen from '@/pages/WelcomeScreen';
@@ -95,8 +96,7 @@ export const router = createBrowserRouter([
     path: '/login',
     element: (
       <PublicRoute>
-        {/* TODO: Créer LoginPage */}
-        <div>Login Page - À implémenter</div>
+        <LoginPage />
       </PublicRoute>
     ),
   },
