@@ -8,10 +8,15 @@ import {
   playerService,
   matchService 
 } from '@/services/firebase';
+import { auth } from '@/services/firebase';
+import { createUserWithEmailAndPassword, signOut as firebaseSignOut } from 'firebase/auth';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '@/services/firebase';
 
 const AppContext = createContext();
 
 export function AppProvider({ children }) {
+  
   // User state
   const [currentUser, setCurrentUser] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
@@ -52,13 +57,12 @@ export function AppProvider({ children }) {
             setSelectedClubId(userClubs[0].id);
           }
         } catch (error) {
-          console.error('Erreur chargement données utilisateur:', error);
+          console.error('Erreur lors du chargement du profil:', error);
         }
       } else {
         setCurrentUser(null);
         setUserProfile(null);
         setClubs([]);
-        setSelectedClubId(null);
       }
       
       setLoading(false);
@@ -66,105 +70,89 @@ export function AppProvider({ children }) {
     });
 
     return unsubscribe;
-  }, []);
-
-  // Charger les équipes quand le club change
-  useEffect(() => {
-    if (!selectedClubId) {
-      setTeams([]);
-      return;
-    }
-
-    const loadTeams = async () => {
-      try {
-        const teamsData = await teamService.getAll(selectedClubId);
-        setTeams(teamsData);
-        
-        // Sélectionner la première équipe si aucune n'est sélectionnée
-        if (teamsData.length > 0 && !selectedTeamId) {
-          setSelectedTeamId(teamsData[0].id);
-        }
-      } catch (error) {
-        console.error('Erreur chargement équipes:', error);
-      }
-    };
-
-    loadTeams();
-
-    // Écouter les changements en temps réel
-    const unsubscribe = teamService.listen(selectedClubId, setTeams);
-    return unsubscribe;
   }, [selectedClubId]);
 
-  // Charger joueurs et matchs quand l'équipe change
+  // Charger les équipes quand un club est sélectionné
   useEffect(() => {
-    if (!selectedClubId || !selectedTeamId) {
-      setPlayers([]);
-      setMatches([]);
-      return;
+    if (selectedClubId) {
+      loadTeams(selectedClubId);
     }
+  }, [selectedClubId]);
 
-    const loadData = async () => {
-      try {
-        const [playersData, matchesData] = await Promise.all([
-          playerService.getAll(selectedClubId, selectedTeamId),
-          matchService.getAll(selectedClubId, selectedTeamId)
-        ]);
-        
-        setPlayers(playersData);
-        setMatches(matchesData);
-      } catch (error) {
-        console.error('Erreur chargement données équipe:', error);
-      }
-    };
-
-    loadData();
-
-    // Écouter les changements en temps réel des joueurs
-    const unsubscribePlayers = playerService.listen(
-      selectedClubId, 
-      selectedTeamId, 
-      setPlayers
-    );
-
-    // Écouter les changements en temps réel des matchs
-    const unsubscribeMatches = matchService.listen(
-      selectedClubId,
-      selectedTeamId,
-      setMatches
-    );
-
-    return () => {
-      unsubscribePlayers();
-      unsubscribeMatches();
-    };
+  // Charger les joueurs et matchs quand une équipe est sélectionnée
+  useEffect(() => {
+    if (selectedClubId && selectedTeamId) {
+      loadPlayers(selectedClubId, selectedTeamId);
+      loadMatches(selectedClubId, selectedTeamId);
+    }
   }, [selectedClubId, selectedTeamId]);
 
-  // Computed values
-  const selectedClub = clubs.find(c => c.id === selectedClubId);
-  const selectedTeam = teams.find(t => t.id === selectedTeamId);
-  const userMembership = selectedClub?.membership;
-
-  // Vérifier les permissions
-  const hasPermission = (action) => {
-    if (!userMembership) return false;
-    
-    const permissions = {
-      admin: ['read', 'write', 'delete', 'manage_users', 'manage_teams'],
-      coach: ['read', 'write'],
-      player: ['read'],
-      viewer: ['read']
-    };
-    
-    return permissions[userMembership.role]?.includes(action) || false;
+  const loadTeams = async (clubId) => {
+    try {
+      const clubTeams = await teamService.getAll(clubId);
+      setTeams(clubTeams);
+      
+      // Sélectionner la première équipe par défaut
+      if (clubTeams.length > 0 && !selectedTeamId) {
+        setSelectedTeamId(clubTeams[0].id);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des équipes:', error);
+    }
   };
 
-  // Switch club
+  const loadPlayers = async (clubId, teamId) => {
+    try {
+      const teamPlayers = await playerService.getAll(clubId, teamId);
+      setPlayers(teamPlayers);
+    } catch (error) {
+      console.error('Erreur lors du chargement des joueurs:', error);
+    }
+  };
+
+  const loadMatches = async (clubId, teamId) => {
+    try {
+      const teamMatches = await matchService.getAll(clubId, teamId);
+      setMatches(teamMatches);
+    } catch (error) {
+      console.error('Erreur lors du chargement des matchs:', error);
+    }
+  };
+
+  // Computed values
+  const selectedClub = clubs.find(c => c.id === selectedClubId) || null;
+  const selectedTeam = teams.find(t => t.id === selectedTeamId) || null;
+  
+  // Get user membership for selected club
+  const userMembership = selectedClub?.memberships?.find(
+    m => m.userId === currentUser?.uid
+  );
+
+  // Permission helper
+  const hasPermission = (permission) => {
+    if (!userMembership) return false;
+    
+    const role = userMembership.role;
+    
+    switch (permission) {
+      case 'edit_club':
+        return role === 'admin';
+      case 'edit_team':
+        return ['admin', 'coach'].includes(role);
+      case 'view_team':
+        return true; // Tous les membres peuvent voir
+      default:
+        return false;
+    }
+  };
+
+  // Switch club helper
   const switchClub = (clubId) => {
     setSelectedClubId(clubId);
-    const firstTeam = teams.find(t => t.clubId === clubId);
-    setSelectedTeamId(firstTeam?.id || null);
-    setShowClubSwitcher(false);
+    setSelectedTeamId(null);
+    setTeams([]);
+    setPlayers([]);
+    setMatches([]);
   };
 
   // Login
@@ -187,99 +175,110 @@ export function AppProvider({ children }) {
     }
   };
 
-  // Logout
+  // ✨ FONCTION LOGOUT AMÉLIORÉE avec redirection
   const logout = async () => {
     try {
+      // Déconnecter de Firebase
       await authService.logout();
+      
+      // Nettoyer tous les états de l'application
       setClubs([]);
       setSelectedClubId(null);
       setSelectedTeamId(null);
       setTeams([]);
       setPlayers([]);
       setMatches([]);
+      setUserProfile(null);
+      setCurrentUser(null);
+      
+      // ✅ Rediriger vers la page de login
+      window.location.href = '/login';
+      
+      console.log('✅ Déconnexion réussie');
       return { success: true };
     } catch (error) {
+      console.error('❌ Erreur lors de la déconnexion:', error);
       return { success: false, error: error.message };
     }
   };
 
   // Signup
   const signup = async (email, password, name) => {
-  try {
-    const userCredential = await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    );
-    
-    const user = userCredential.user;
-    
-    await setDoc(doc(db, 'users', user.uid), {
-      email: user.email,
-      name: name,
-      createdAt: serverTimestamp(),
-      onboarding: {
-        completed: false,
-        startedAt: serverTimestamp(),
-      },
-    });
-    
-    return user;
-  } catch (error) {
-    console.error('Signup error:', error);
-    throw new Error(error.message);
-  }
-};
-
-const completeOnboarding = async (onboardingData) => {
-  console.log('👤 currentUser:', currentUser);  // ⬅️ AJOUTER CETTE LIGNE
-  console.log('👤 currentUser.uid:', currentUser?.uid);  // ⬅️ ET CELLE-CI
-  if (!currentUser) {
-    throw new Error('Utilisateur non connecté');
-  }
-
-  try {
-    console.log('🚀 Onboarding data:', onboardingData);
-
-console.log('📝 Création du club avec userId:', currentUser.uid);
-    
-    // 1. Créer le club avec clubService
-    const clubId = await clubService.createClub({
-      name: onboardingData.club.name,
-      sport: onboardingData.club.sport,
-      city: onboardingData.club.city,
-      ownerId: currentUser.uid,
-    }, currentUser.uid);
-    
-    // 2. Créer l'équipe avec teamService
-    const teamId = await teamService.createTeam(clubId, {
-      name: onboardingData.team.name,
-      category: onboardingData.team.category,
-      gender: onboardingData.team.gender,
-      season: onboardingData.team.season,
-    });
-    
-    // 3. Ajouter les joueurs
-    if (onboardingData.players?.length > 0) {
-      for (const player of onboardingData.players) {
-        await playerService.addPlayer(clubId, teamId, player);
-      }
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      
+      const user = userCredential.user;
+      
+      await setDoc(doc(db, 'users', user.uid), {
+        email: user.email,
+        name: name,
+        createdAt: serverTimestamp(),
+        onboarding: {
+          completed: false,
+          startedAt: serverTimestamp(),
+        },
+      });
+      
+      return user;
+    } catch (error) {
+      console.error('Signup error:', error);
+      throw new Error(error.message);
     }
-    
-    // 4. Marquer l'onboarding comme terminé
-    await userService.updateProfile(currentUser.uid, {
-      'onboarding.completed': true,
-      'onboarding.completedAt': new Date(),
-    });
-    
-    console.log('✅ Onboarding terminé !');
-    window.location.href = '/dashboard';
+  };
 
-  } catch (error) {
-    console.error('❌ Erreur onboarding:', error);
-    throw error;
-  }
-};
+  const completeOnboarding = async (onboardingData) => {
+    console.log('👤 currentUser:', currentUser);
+    console.log('👤 currentUser.uid:', currentUser?.uid);
+    
+    if (!currentUser) {
+      throw new Error('Utilisateur non connecté');
+    }
+
+    try {
+      console.log('🚀 Onboarding data:', onboardingData);
+      console.log('📝 Création du club avec userId:', currentUser.uid);
+      
+      // 1. Créer le club avec clubService
+      const clubId = await clubService.createClub({
+        name: onboardingData.club.name,
+        sport: onboardingData.club.sport,
+        city: onboardingData.club.city,
+        ownerId: currentUser.uid,
+      }, currentUser.uid);
+      
+      // 2. Créer l'équipe avec teamService
+      const teamId = await teamService.createTeam(clubId, {
+        name: onboardingData.team.name,
+        category: onboardingData.team.category,
+        gender: onboardingData.team.gender,
+        season: onboardingData.team.season,
+      });
+      
+      // 3. Ajouter les joueurs
+      if (onboardingData.players?.length > 0) {
+        for (const player of onboardingData.players) {
+          await playerService.addPlayer(clubId, teamId, player);
+        }
+      }
+      
+      // 4. Marquer l'onboarding comme terminé
+      await userService.updateProfile(currentUser.uid, {
+        'onboarding.completed': true,
+        'onboarding.completedAt': new Date(),
+      });
+      
+      console.log('✅ Onboarding terminé !');
+      window.location.href = '/dashboard';
+
+    } catch (error) {
+      console.error('❌ Erreur onboarding:', error);
+      throw error;
+    }
+  };
 
   const value = {
     // User

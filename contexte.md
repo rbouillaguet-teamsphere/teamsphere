@@ -2,9 +2,9 @@
 
 ## Résumé du Projet
 
-**TeamSphere** est une application de gestion d'équipes sportives construite avec React, Firebase et Tailwind CSS. L'application permet aux entraîneurs et gestionnaires de clubs de gérer leurs équipes, joueurs, matchs et statistiques. **Depuis la version 1.3.0, TeamSphere est disponible comme application mobile native sur iOS et Android grâce à Capacitor. La version 1.3.1 apporte une page de login professionnelle complète avec authentification multi-provider.**
+**TeamSphere** est une application de gestion d'équipes sportives construite avec React, Firebase et Tailwind CSS. L'application permet aux entraîneurs et gestionnaires de clubs de gérer leurs équipes, joueurs, matchs et statistiques. **Depuis la version 1.3.0, TeamSphere est disponible comme application mobile native sur iOS et Android grâce à Capacitor. La version 1.3.1 a apporté une page de login professionnelle complète, et la version 1.3.2 corrige la fonction de déconnexion.**
 
-**Version actuelle** : 1.3.1  
+**Version actuelle** : 1.3.2  
 **Date de mise à jour** : 3 novembre 2025
 
 ---
@@ -13,7 +13,32 @@
 
 ### ✅ Fonctionnalités Complétées
 
-**Version 1.3.1 (Actuelle) - Page de Login Professionnelle** 🔐
+**Version 1.3.2 (Actuelle) - Corrections Fonction Logout** 🔧
+- ✅ **Correction redirection déconnexion**
+  - Plus de passage par l'écran d'onboarding
+  - Redirection directe vers `/login`
+  - Correction dans `ProtectedRoute` (`/` → `/login`)
+- ✅ **Correction Sidebar.jsx**
+  - Utilisation directe de `logout` depuis `useApp()`
+  - Suppression de l'appel via `authService`
+  - Fonction `handleLogout` simplifiée
+- ✅ **Amélioration AppContext.jsx**
+  - Utilisation de `window.location.href` au lieu de `useNavigate()`
+  - Évite l'erreur "must be used in Router context"
+  - Nettoyage garanti de tous les états
+- ✅ **Correction noms de fonctions services**
+  - `teamService.getAll()` au lieu de `getTeamsByClub()`
+  - `playerService.getAll()` au lieu de `getPlayersByTeam()`
+  - `matchService.getAll()` au lieu de `getMatchesByTeam()`
+  - Ajout gestion d'erreur try/catch
+- ✅ **Tests complets effectués**
+  - Déconnexion depuis Sidebar ✅
+  - Déconnexion depuis Topbar ✅
+  - Protection des routes ✅
+  - Nettoyage des états ✅
+  - Aucune erreur console ✅
+
+**Version 1.3.1 - Page de Login Professionnelle** 🔐
 - ✅ **Page de login moderne et responsive**
   - Design professionnel avec gradient
   - Formulaire email/password avec validation
@@ -627,21 +652,27 @@ service cloud.firestore {
 
 ### Court Terme (1-2 semaines)
 
-1. **Intégrer la Page de Login**
-   - Copier les 8 fichiers fournis
-   - Configurer Firebase Console
-   - Tester email/password
-   - Tester Google OAuth
-   - Documenter pour l'équipe
+1. ~~**Intégrer la Page de Login**~~ ✅ Fait v1.3.1
+   - ~~Copier les 8 fichiers fournis~~
+   - ~~Configurer Firebase Console~~
+   - ~~Tester email/password~~
+   - ~~Tester Google OAuth~~
+   - ~~Documenter pour l'équipe~~
 
-2. **Créer Page Signup**
+2. ~~**Corriger Fonction Logout**~~ ✅ Fait v1.3.2
+   - ~~Corriger redirection vers /login~~
+   - ~~Corriger appel logout dans Sidebar~~
+   - ~~Corriger noms fonctions services~~
+   - ~~Tester déconnexion complète~~
+
+3. **Créer Page Signup**
    - Dupliquer structure LoginPage
    - Adapter formulaire (+ displayName)
    - Intégrer authService.signup()
    - Ajouter terms & conditions
    - Tester création compte
 
-3. **Créer Page Forgot Password**
+4. **Créer Page Forgot Password**
    - Formulaire simple (email)
    - Intégrer authService.resetPassword()
    - Message de confirmation

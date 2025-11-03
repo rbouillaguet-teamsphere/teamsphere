@@ -5,6 +5,199 @@ Toutes les modifications notables de ce projet seront documentées ici.
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.0.0/),
 et ce projet adhère à [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [1.3.2] - 2025-11-03
+
+### 🔧 Corrections Post-Login - Fonction Logout
+
+#### Corrigé
+
+**🚪 Fonction de Déconnexion**
+- Correction de la redirection dans `ProtectedRoute`
+  - Avant : Redirige vers `/` (landing page)
+  - Après : Redirige vers `/login` directement
+  - Fichier : `src/router/index.jsx` ligne 44
+- Correction dans `Sidebar.jsx`
+  - Avant : `const { authService } = useApp()` puis `authService.logout()`
+  - Après : `const { logout } = useApp()` directement
+  - Suppression de l'appel intermédiaire
+- Amélioration de `AppContext.jsx`
+  - Utilisation de `window.location.href` au lieu de `useNavigate()`
+  - Évite l'erreur "useNavigate() must be used in Router context"
+  - Redirection garantie vers `/login` après déconnexion
+- Correction des noms de fonctions services
+  - `teamService.getAll()` au lieu de `getTeamsByClub()`
+  - `playerService.getAll()` au lieu de `getPlayersByTeam()`
+  - `matchService.getAll()` au lieu de `getMatchesByTeam()`
+  - Ajout de gestion d'erreur try/catch dans chaque fonction
+
+**📝 Problèmes Résolus**
+- ❌ Avant : Passage par l'écran d'onboarding lors de la déconnexion
+- ✅ Après : Redirection directe vers `/login`
+- ❌ Avant : Erreur "Cannot read properties of undefined (reading 'logout')"
+- ✅ Après : Fonction `logout()` accessible directement
+- ❌ Avant : Erreur "useNavigate() may be used only in context of Router"
+- ✅ Après : Utilisation de `window.location.href` qui fonctionne partout
+- ❌ Avant : Erreur "teamService.getTeamsByClub is not a function"
+- ✅ Après : Utilisation des bons noms de fonctions (`getAll`)
+
+**🎯 Flux de Déconnexion Corrigé**
+```
+1. User clique sur "Déconnexion" (Sidebar ou Topbar)
+   ↓
+2. AppContext.logout() appelé
+   ↓
+3. authService.logout() → Déconnexion Firebase
+   ↓
+4. Nettoyage de tous les états (clubs, teams, players, etc.)
+   ↓
+5. window.location.href = '/login' → Redirection
+   ↓
+6. ProtectedRoute détecte currentUser = null
+   ↓
+7. Si tentative d'accès route protégée → Redirect vers /login
+   ↓
+8. ✅ Utilisateur sur page de login, session terminée
+```
+
+#### Fichiers Modifiés
+
+**1. src/router/index.jsx**
+```javascript
+// Ligne 44 - AVANT
+if (!currentUser) {
+  return <Navigate to="/" replace />;  // ❌ Problème
+}
+
+// Ligne 44 - APRÈS
+if (!currentUser) {
+  return <Navigate to="/login" replace />;  // ✅ Corrigé
+}
+```
+
+**2. src/components/layout/Sidebar.jsx**
+```javascript
+// AVANT
+const { authService } = useApp();  // ❌ Problème
+
+const handleLogout = async () => {
+  try {
+    await authService.logout();  // ❌ Erreur ici
+    navigate('/');
+  } catch (error) {
+    console.error('Erreur logout:', error);
+  }
+};
+
+// APRÈS
+const { logout } = useApp();  // ✅ Corrigé
+
+const handleLogout = () => {
+  logout();  // ✅ Direct
+};
+```
+
+**3. src/context/AppContext.jsx**
+```javascript
+// Fonction logout améliorée
+const logout = async () => {
+  try {
+    await authService.logout();
+    
+    // Nettoyage complet de tous les états
+    setClubs([]);
+    setSelectedClubId(null);
+    setSelectedTeamId(null);
+    setTeams([]);
+    setPlayers([]);
+    setMatches([]);
+    setUserProfile(null);
+    setCurrentUser(null);
+    
+    // ✅ Redirection avec window.location (pas de dépendance Router)
+    window.location.href = '/login';
+    
+    console.log('✅ Déconnexion réussie');
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Erreur lors de la déconnexion:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Noms de fonctions services corrigés
+const loadTeams = async (clubId) => {
+  try {
+    const clubTeams = await teamService.getAll(clubId);  // ✅ Corrigé
+    setTeams(clubTeams);
+    if (clubTeams.length > 0 && !selectedTeamId) {
+      setSelectedTeamId(clubTeams[0].id);
+    }
+  } catch (error) {
+    console.error('Erreur lors du chargement des équipes:', error);
+  }
+};
+
+const loadPlayers = async (clubId, teamId) => {
+  try {
+    const teamPlayers = await playerService.getAll(clubId, teamId);  // ✅ Corrigé
+    setPlayers(teamPlayers);
+  } catch (error) {
+    console.error('Erreur lors du chargement des joueurs:', error);
+  }
+};
+
+const loadMatches = async (clubId, teamId) => {
+  try {
+    const teamMatches = await matchService.getAll(clubId, teamId);  // ✅ Corrigé
+    setMatches(teamMatches);
+  } catch (error) {
+    console.error('Erreur lors du chargement des matchs:', error);
+  }
+};
+```
+
+#### Tests de Validation
+
+**✅ Test 1 : Déconnexion depuis Sidebar**
+- Clic sur "Déconnexion" → Redirection vers `/login` ✅
+- Aucune erreur console ✅
+- Message "✅ Déconnexion réussie" affiché ✅
+
+**✅ Test 2 : Déconnexion depuis Topbar**
+- Clic sur "Déconnexion" → Redirection vers `/login` ✅
+- États nettoyés (`currentUser = null`) ✅
+
+**✅ Test 3 : Protection des Routes**
+- Tentative `/dashboard` après logout → Redirect `/login` ✅
+- Tentative `/players` après logout → Redirect `/login` ✅
+
+**✅ Test 4 : Pas d'Onboarding**
+- Déconnexion ne passe plus par `/` ou `/onboarding` ✅
+- Redirection directe vers `/login` ✅
+
+#### Notes Techniques
+
+**Pourquoi `window.location.href` au lieu de `useNavigate()` ?**
+- `useNavigate()` nécessite d'être dans un composant `<Router>`
+- `AppProvider` est souvent wrappé AUTOUR du Router
+- `window.location.href` fonctionne partout, sans dépendance
+- Rechargement complet = nettoyage garanti de tous les états React
+- Plus simple et plus robuste pour la déconnexion
+
+**Pourquoi `/login` au lieu de `/` ?**
+- Évite de passer par la landing page
+- Évite de passer par l'onboarding
+- Plus direct pour l'utilisateur
+- Cohérent avec le flux d'authentification standard
+
+**Temps de Résolution**
+- Identification : 2 min
+- Correction : 5 min
+- Tests : 3 min
+- **Total : 10 minutes**
+
+---
+
 ## [1.3.1] - 2025-11-03
 
 ### 🔐 Page de Login Complète - Authentification Professionnelle

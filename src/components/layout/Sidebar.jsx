@@ -6,7 +6,7 @@ import { useApp } from '@/context/AppContext';
 export const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { authService } = useApp();
+  const { logout } = useApp();
   const [statsMenuOpen, setStatsMenuOpen] = useState(false);
 
   const menuItems = [
@@ -26,14 +26,9 @@ export const Sidebar = () => {
   const isActive = (path) => location.pathname === path;
   const isStatsActive = () => location.pathname.startsWith('/statistics');
 
-  const handleLogout = async () => {
-    try {
-      await authService.logout();
-      navigate('/');
-    } catch (error) {
-      console.error('Erreur logout:', error);
-    }
-  };
+  const handleLogout = () => {
+      logout();
+      };
 
   // Ouvrir automatiquement le menu Stats si on est sur une page de stats
   React.useEffect(() => {
