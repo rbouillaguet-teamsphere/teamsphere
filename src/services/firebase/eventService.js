@@ -1,3 +1,4 @@
+// src/services/firebase/eventService.js
 import { 
   collection, 
   doc, 
@@ -12,7 +13,7 @@ import {
   serverTimestamp,
   Timestamp
 } from 'firebase/firestore';
-import { db } from './config';
+import { db } from '../firebase'; // ✅ Correction: import depuis le niveau supérieur
 
 /**
  * Service de gestion des événements (entraînements, matchs, réunions, etc.)

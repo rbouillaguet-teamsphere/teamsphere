@@ -1,8 +1,6 @@
-// src/main.jsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider } from 'react-router-dom';
-import App from './App';
 import { AppProvider } from './context/AppContext';
 import { router } from './router';
 import './index.css';

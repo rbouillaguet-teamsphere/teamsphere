@@ -8,9 +8,10 @@ import {
   OAuthProvider,
   onAuthStateChanged,
   sendPasswordResetEmail,
+  sendEmailVerification,
   updateProfile
 } from 'firebase/auth';
-import { auth } from '@/config/firebase';
+import { auth } from '../services/firebase';
 
 /**
  * Service d'authentification Firebase
@@ -41,6 +42,7 @@ class AuthService {
 
   /**
    * Inscription avec email et mot de passe
+   * Envoie automatiquement un email de vérification
    * @param {string} email - Email de l'utilisateur
    * @param {string} password - Mot de passe
    * @param {string} displayName - Nom d'affichage (optionnel)
@@ -48,22 +50,97 @@ class AuthService {
    */
   async signup(email, password, displayName = '') {
     try {
+      console.log('🔷 [SIGNUP] Début inscription pour:', email);
+      
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
+      console.log('✅ [SIGNUP] Compte créé avec succès:', userCredential.user.email);
 
       // Mettre à jour le profil si un nom est fourni
       if (displayName) {
+        console.log('🔷 [SIGNUP] Mise à jour du profil avec nom:', displayName);
         await updateProfile(userCredential.user, { displayName });
+        console.log('✅ [SIGNUP] Profil mis à jour');
       }
 
-      console.log('✅ Inscription réussie:', userCredential.user.email);
+      // Envoyer l'email de vérification automatiquement
+      console.log('📧 [SIGNUP] Envoi de l\'email de vérification...');
+      await this.sendVerificationEmail();
+      console.log('✅ [SIGNUP] Email de vérification envoyé avec succès');
+      
       return userCredential.user;
     } catch (error) {
-      console.error('❌ Erreur d\'inscription:', error.code);
+      console.error('❌ [SIGNUP] Erreur d\'inscription:', error);
+      console.error('❌ [SIGNUP] Code erreur:', error.code);
+      console.error('❌ [SIGNUP] Message:', error.message);
       throw new Error(this.getErrorMessage(error.code));
+    }
+  }
+
+  /**
+   * Envoyer un email de vérification
+   * @returns {Promise<void>}
+   */
+  async sendVerificationEmail() {
+    try {
+      console.log('📧 [VERIFY] Récupération utilisateur actuel...');
+      const user = auth.currentUser;
+      
+      if (!user) {
+        console.error('❌ [VERIFY] Aucun utilisateur connecté');
+        throw new Error('Aucun utilisateur connecté');
+      }
+
+      console.log('✅ [VERIFY] Utilisateur trouvé:', user.email);
+      console.log('📧 [VERIFY] Email déjà vérifié ?', user.emailVerified);
+
+      if (user.emailVerified) {
+        console.log('✅ [VERIFY] Email déjà vérifié, pas besoin d\'envoyer');
+        return;
+      }
+
+      console.log('📧 [VERIFY] Envoi de l\'email de vérification via Firebase...');
+      await sendEmailVerification(user, {
+        url: window.location.origin + '/login',
+        handleCodeInApp: false,
+      });
+
+      console.log('✅ [VERIFY] Requête d\'envoi email réussie pour:', user.email);
+      console.log('📬 [VERIFY] Vérifiez votre boîte email (et spam)');
+    } catch (error) {
+      console.error('❌ [VERIFY] Erreur envoi email vérification:', error);
+      console.error('❌ [VERIFY] Code erreur:', error.code);
+      console.error('❌ [VERIFY] Message:', error.message);
+      throw new Error(this.getErrorMessage(error.code));
+    }
+  }
+
+  /**
+   * Vérifier si l'email de l'utilisateur est vérifié
+   * @returns {boolean}
+   */
+  isEmailVerified() {
+    const user = auth.currentUser;
+    return user ? user.emailVerified : false;
+  }
+
+  /**
+   * Recharger les données de l'utilisateur depuis Firebase
+   * Utile pour vérifier si l'email a été vérifié
+   * @returns {Promise<void>}
+   */
+  async reloadUser() {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        await user.reload();
+        console.log('✅ Données utilisateur rechargées');
+      }
+    } catch (error) {
+      console.error('❌ Erreur rechargement utilisateur:', error);
     }
   }
 
@@ -132,21 +209,24 @@ class AuthService {
       console.log('✅ Déconnexion réussie');
     } catch (error) {
       console.error('❌ Erreur de déconnexion:', error);
-      throw new Error('Impossible de se déconnecter');
+      throw new Error('Erreur lors de la déconnexion');
     }
   }
 
   /**
-   * Réinitialisation du mot de passe
+   * Réinitialiser le mot de passe
    * @param {string} email - Email de l'utilisateur
    * @returns {Promise<void>}
    */
   async resetPassword(email) {
     try {
-      await sendPasswordResetEmail(auth, email);
+      await sendPasswordResetEmail(auth, email, {
+        url: window.location.origin + '/login',
+        handleCodeInApp: false,
+      });
       console.log('✅ Email de réinitialisation envoyé à:', email);
     } catch (error) {
-      console.error('❌ Erreur reset password:', error);
+      console.error('❌ Erreur reset password:', error.code);
       throw new Error(this.getErrorMessage(error.code));
     }
   }
@@ -161,8 +241,8 @@ class AuthService {
 
   /**
    * Observer les changements d'état d'authentification
-   * @param {Function} callback - Fonction appelée lors du changement d'état
-   * @returns {Function} Fonction de désinscription
+   * @param {Function} callback - Fonction appelée à chaque changement
+   * @returns {Function} Fonction de désabonnement
    */
   onAuthStateChanged(callback) {
     return onAuthStateChanged(auth, callback);
@@ -170,10 +250,18 @@ class AuthService {
 
   /**
    * Vérifier si un utilisateur est connecté
-   * @returns {boolean} True si connecté
+   * @returns {boolean}
    */
   isAuthenticated() {
     return !!auth.currentUser;
+  }
+
+  /**
+   * Vérifier si l'utilisateur n'est PAS connecté
+   * @returns {boolean}
+   */
+  isGuest() {
+    return !auth.currentUser;
   }
 
   /**
@@ -224,8 +312,12 @@ class AuthService {
       'auth/email-already-in-use': 'Cet email est déjà utilisé',
       'auth/weak-password': 'Le mot de passe doit contenir au moins 6 caractères',
       
-      // Erreurs générales
+      // Erreurs de vérification email
       'auth/too-many-requests': 'Trop de tentatives. Veuillez réessayer plus tard',
+      'auth/invalid-action-code': 'Le lien de vérification est invalide ou a expiré',
+      'auth/expired-action-code': 'Le lien de vérification a expiré',
+      
+      // Erreurs générales
       'auth/network-request-failed': 'Erreur de connexion. Vérifiez votre réseau',
       'auth/operation-not-allowed': 'Cette opération n\'est pas autorisée',
       
@@ -233,10 +325,6 @@ class AuthService {
       'auth/popup-blocked': 'La popup a été bloquée par le navigateur',
       'auth/popup-closed-by-user': 'La connexion a été annulée',
       'auth/cancelled-popup-request': 'Une autre popup est déjà ouverte',
-      
-      // Erreurs de token
-      'auth/invalid-action-code': 'Le lien est invalide ou a expiré',
-      'auth/expired-action-code': 'Le lien a expiré'
     };
 
     return errorMessages[errorCode] || 'Une erreur est survenue. Veuillez réessayer';
@@ -247,4 +335,4 @@ class AuthService {
 export const authService = new AuthService();
 
 // Export également la classe pour les tests
-export default AuthService;
+export default authService;

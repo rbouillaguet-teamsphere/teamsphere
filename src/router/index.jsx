@@ -1,12 +1,14 @@
-// src/router/index.jsx
 import React from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { useApp } from '@/context/AppContext';
+import authService from '@/services/authService';
 
 // Pages publiques
 import LoginPage from '@/pages/LoginPage';
 import LandingPage from '@/pages/LandingPage';
 import SignupPage from '@/pages/SignupPage';
+import ForgotPasswordPage from '@/pages/ForgotPasswordPage';
+import EmailVerificationPage from '@/pages/EmailVerificationPage';
 import WelcomeScreen from '@/pages/WelcomeScreen';
 
 // Onboarding
@@ -27,6 +29,7 @@ import ChartsPage from '@/pages/statistics/ChartsPage';
 
 /**
  * Composant pour protéger les routes authentifiées
+ * Vérifie l'authentification ET la vérification de l'email
  */
 const ProtectedRoute = ({ children }) => {
   const { currentUser, loading } = useApp();
@@ -42,8 +45,17 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
+  // Si non connecté, rediriger vers login
   if (!currentUser) {
     return <Navigate to="/login" replace />;
+  }
+
+  // ✨ NOUVEAU : Vérifier si l'email est vérifié
+  const isEmailVerified = authService.isEmailVerified();
+  
+  // Si email non vérifié, rediriger vers la page de vérification
+  if (!isEmailVerified) {
+    return <Navigate to="/verify-email" replace />;
   }
 
   return children;
@@ -100,6 +112,18 @@ export const router = createBrowserRouter([
       </PublicRoute>
     ),
   },
+  {
+    path: '/forgot-password',
+    element: (
+      <PublicRoute>
+        <ForgotPasswordPage />
+      </PublicRoute>
+    ),
+  },
+  {
+    path: '/verify-email',
+    element: <EmailVerificationPage />,
+  },
 
   // Routes d'onboarding (authentifiées)
   {
@@ -144,7 +168,7 @@ export const router = createBrowserRouter([
           <CalendarPage />
         </DashboardLayout>
       </ProtectedRoute>
-    )
+    ),
   },
 
   // Routes Statistiques avec sous-menu
