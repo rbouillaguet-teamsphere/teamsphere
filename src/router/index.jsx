@@ -19,6 +19,7 @@ import DashboardPage from '@/pages/DashboardPage';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import PlayersPage from '@/pages/PlayersPage';
 import CalendarPage from '@/pages/CalendarPage';
+import AttendancePage from '@/pages/AttendancePage';
 
 // Pages Statistiques
 import OverviewPage from '@/pages/statistics/OverviewPage';
@@ -50,7 +51,7 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // ✨ NOUVEAU : Vérifier si l'email est vérifié
+  // Vérifier si l'email est vérifié
   const isEmailVerified = authService.isEmailVerified();
   
   // Si email non vérifié, rediriger vers la page de vérification
@@ -166,6 +167,18 @@ export const router = createBrowserRouter([
       <ProtectedRoute>
         <DashboardLayout>
           <CalendarPage />
+        </DashboardLayout>
+      </ProtectedRoute>
+    ),
+  },
+  
+  // Route Présences ✨ NOUVEAU
+  {
+    path: '/attendance',
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout>
+          <AttendancePage />
         </DashboardLayout>
       </ProtectedRoute>
     ),
