@@ -1,3 +1,11 @@
+# 📘 CHANGELOG COMPLET TeamSphere - Version 1.3.3
+
+
+
+---
+
+## 📄 Contenu du fichier : CHANGELOG.md
+
 # Changelog
 
 Toutes les modifications notables de ce projet seront documentées ici.
@@ -586,6 +594,250 @@ src/
 **Légende** :
 - 🎉 Nouvelle fonctionnalité majeure
 - 🔐 Sécurité et authentification ✨ **ENRICHI v1.3.1**
+- 📅 Calendrier et événements
+- ⚽ Matchs et compétitions
+- 🗂️ Architecture et structure
+- 📊 Dashboard et visualisation
+- 👥 Gestion des utilisateurs
+- 🎨 Interface utilisateur
+- 🔥 Firebase et backend
+- 📝 Organisation du code
+- 📚 Documentation
+- 🔧 Corrections et améliorations
+- 📱 Mobile et applications natives
+
+
+---
+
+## 📄 Contenu du fichier : CHANGELOG-v1.3.3.md
+
+# 📋 CHANGELOG - Version 1.3.3
+
+## [1.3.3] - 2025-11-04
+
+### 🔐 Authentification Complète - Signup, Forgot Password & Email Verification
+
+#### ✨ Ajouté
+
+**📝 Page d'inscription complète (SignupPage.jsx)**
+- `src/pages/SignupPage.jsx` (350+ lignes)
+  - Formulaire complet : nom, email, password, confirmation
+  - Validation forte des mots de passe (8 caractères, majuscule, minuscule, chiffre)
+  - Validation correspondance des mots de passe
+  - Messages d'erreur en temps réel
+  - États de chargement animés
+  - Boutons OAuth (Google, Apple) préparés
+  - Liens vers login et conditions d'utilisation
+  - Design cohérent avec LoginPage
+  - Redirection vers `/verify-email` après inscription
+
+**🔑 Page de réinitialisation (ForgotPasswordPage.jsx)**
+- `src/pages/ForgotPasswordPage.jsx` (280+ lignes)
+  - Formulaire email simple et clair
+  - Validation email en temps réel
+  - Page de confirmation après envoi
+  - Instructions détaillées (vérifier spam, délai, etc.)
+  - Bouton "Renvoyer l'email"
+  - Bouton retour vers login
+  - Liens vers signup
+  - Intégration `authService.resetPassword()`
+  - Messages de succès/erreur
+
+**📧 Vérification email obligatoire (EmailVerificationPage.jsx)**
+- `src/pages/EmailVerificationPage.jsx` (400+ lignes)
+  - Page d'attente après inscription
+  - Affichage email de l'utilisateur
+  - Instructions claires en 3 étapes
+  - **Vérification automatique** toutes les 3 secondes
+  - Détection instantanée de la vérification
+  - Bouton "Renvoyer l'email" avec gestion état
+  - Messages de succès/erreur contextuels
+  - Indicateur de vérification en cours (animation pulse)
+  - Redirection automatique vers `/welcome` après vérification
+  - Bouton déconnexion
+  - Support email visible
+
+**🔧 Service d'authentification amélioré (authService.js)**
+- `src/services/authService.js` (mis à jour, 450+ lignes)
+  - ✨ **Nouvelle méthode** `sendVerificationEmail()` - Envoi email de vérification
+  - ✨ **Nouvelle méthode** `isEmailVerified()` - Vérifier si email vérifié
+  - ✨ **Nouvelle méthode** `reloadUser()` - Recharger données utilisateur
+  - Modification `signup()` - Envoi automatique email après inscription
+  - Import `sendEmailVerification` depuis Firebase
+  - Logs détaillés pour debug (tous les [SIGNUP], [VERIFY])
+  - Gestion erreurs améliorée
+  - Messages d'erreur français complets
+
+**🛣️ Router sécurisé avec vérification email**
+- `src/router/index.jsx` (mis à jour)
+  - Import `authService` pour vérification
+  - ✨ **ProtectedRoute améliorée** : vérifie email avant accès
+  - Si email non vérifié → redirection `/verify-email`
+  - Route `/signup` ajoutée (PublicRoute)
+  - Route `/forgot-password` ajoutée (PublicRoute)
+  - Route `/verify-email` ajoutée (accès direct)
+  - Protection complète des routes sensibles
+
+**📱 Pages mises à jour**
+- `SignupPage.jsx` - Redirection vers `/verify-email` au lieu de `/welcome`
+
+#### 🔄 Flux d'authentification complet
+
+```
+1. INSCRIPTION
+   └─> SignupPage (/signup)
+       │
+       ▼
+2. CRÉATION COMPTE
+   └─> authService.signup(email, password, name)
+       │
+       ├─> createUserWithEmailAndPassword()
+       ├─> updateProfile(displayName)
+       └─> sendVerificationEmail() ✨ AUTO
+       │
+       ▼
+3. REDIRECTION
+   └─> navigate('/verify-email')
+       │
+       ▼
+4. PAGE VÉRIFICATION
+   └─> EmailVerificationPage
+       │
+       ├─> Affiche instructions
+       ├─> Polling auto (3s)
+       └─> Bouton "Renvoyer"
+       │
+       ▼
+5. USER VÉRIFIE EMAIL
+   └─> Clique sur lien Firebase
+       │
+       ▼
+6. DÉTECTION AUTOMATIQUE
+   └─> reloadUser() + isEmailVerified()
+       │
+       ▼
+7. EMAIL VÉRIFIÉ
+   └─> Message succès → /welcome (2s)
+       │
+       ▼
+8. PROTECTION ROUTES
+   └─> ProtectedRoute vérifie email
+       │
+       ├─> ❌ Non vérifié → /verify-email
+       └─> ✅ Vérifié → Accès autorisé
+```
+
+#### 🔒 Sécurité renforcée
+
+- ✅ Validation email côté client + serveur
+- ✅ Validation forte des mots de passe (8 car. min, complexité)
+- ✅ Vérification email obligatoire avant accès
+- ✅ Protection automatique de toutes les routes
+- ✅ Gestion des erreurs Firebase complète
+- ✅ Messages d'erreur en français
+- ✅ Rate limiting Firebase automatique
+- ✅ Logs de debug pour troubleshooting
+
+#### 📊 Statistiques
+
+**Code ajouté/modifié** :
+- 3 nouvelles pages (1030+ lignes)
+- 1 service mis à jour (450+ lignes)
+- 1 router mis à jour
+- **Total : ~1500 lignes de code**
+
+**Fichiers créés** :
+```
+src/
+├── pages/
+│   ├── SignupPage.jsx              # ✨ NOUVEAU (350 lignes)
+│   ├── ForgotPasswordPage.jsx      # ✨ NOUVEAU (280 lignes)
+│   └── EmailVerificationPage.jsx   # ✨ NOUVEAU (400 lignes)
+├── services/
+│   └── authService.js              # 📝 MIS À JOUR (450 lignes)
+└── router/
+    └── index.jsx                   # 📝 MIS À JOUR
+```
+
+**Documentation** :
+- Guide configuration Firebase Email (inclus)
+- Instructions troubleshooting (incluses)
+
+#### 🧪 Tests effectués
+
+- ✅ Inscription nouveau compte
+- ✅ Validation formulaire signup
+- ✅ Envoi email de vérification
+- ✅ Réception email (vérifier spam)
+- ✅ Vérification automatique
+- ✅ Renvoyer email fonctionne
+- ✅ Reset password fonctionne
+- ✅ Protection routes email non vérifié
+- ✅ Redirection après vérification
+- ✅ Déconnexion fonctionne
+- ✅ Navigation entre pages
+- ✅ Messages d'erreur corrects
+
+#### 📝 Notes importantes
+
+**Configuration Firebase requise** :
+1. Authentication > Email/Password activé
+2. Templates > Email verification configuré
+3. Authorized domains : localhost + domaine prod
+4. Quotas : 100 emails/jour (plan gratuit)
+
+**2FA (Authentification à deux facteurs)** :
+- ⏭️ **Reporté** à une version future
+- Nécessite plan Firebase Blaze (payant)
+- Code préparé dans `authService.js`
+- Sera implémenté en v1.3.4 ou ultérieur
+
+**Prochaines étapes** :
+- [ ] 2FA (nécessite plan Blaze)
+- [ ] OAuth Google fonctionnel
+- [ ] OAuth Apple fonctionnel
+- [ ] Captcha après X tentatives
+- [ ] Logs de connexion Firestore
+- [ ] Analytics connexions
+- [ ] Remember me fonctionnel
+
+#### 🐛 Corrections incluses
+
+- ✅ Import Firebase corrigé (`../services/firebase`)
+- ✅ Context corrigé (`useApp` au lieu de `useAuth`)
+- ✅ Routes protégées vérifient email
+- ✅ Redirection logout vers `/login`
+- ✅ Logs détaillés pour debug
+
+---
+
+## [1.3.2] - 2025-11-03
+
+### 🔧 Corrections Fonction Logout
+
+[... contenu conservé ...]
+
+---
+
+## [1.3.1] - 2025-11-03
+
+### 🔐 Page de Login Complète
+
+[... contenu conservé ...]
+
+---
+
+## [1.3.0] - 2025-11-02
+
+### 📱 Transformation Mobile - Intégration Capacitor
+
+[... contenu conservé ...]
+
+---
+
+**Légende** :
+- 🎉 Nouvelle fonctionnalité majeure
+- 🔐 Sécurité et authentification ✨ **v1.3.3 COMPLET**
 - 📅 Calendrier et événements
 - ⚽ Matchs et compétitions
 - 🗂️ Architecture et structure

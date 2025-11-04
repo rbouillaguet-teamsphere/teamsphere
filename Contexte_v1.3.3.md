@@ -1,3 +1,11 @@
+# 📘 Contexte Global TeamSphere - Version 1.3.3
+
+
+
+---
+
+## 📄 Contenu du fichier : contexte.md
+
 # Contexte TeamSphere - État Actuel du Projet
 
 ## Résumé du Projet
@@ -790,3 +798,389 @@ Utiliser Firebase Security Rules.
 **🎉 TeamSphere est prêt avec authentification professionnelle, application web moderne et mobile native !**
 
 **Prochaine étape : Créer pages Signup et Forgot Password ! 🚀**
+
+
+---
+
+## 📄 Contenu du fichier : contexte-v1.3.3.md
+
+# Contexte TeamSphere - État Actuel du Projet
+
+## Résumé du Projet
+
+**TeamSphere** est une application de gestion d'équipes sportives construite avec React, Firebase et Tailwind CSS. L'application permet aux entraîneurs et gestionnaires de clubs de gérer leurs équipes, joueurs, matchs et statistiques.
+
+**Version actuelle** : 1.3.3  
+**Date de mise à jour** : 4 novembre 2025
+
+---
+
+## 📊 État Actuel du Projet
+
+### ✅ Fonctionnalités Complétées
+
+**Version 1.3.3 (Actuelle) - Authentification Complète** 🔐
+- ✅ **Page d'inscription complète (SignupPage)**
+  - Formulaire : nom, email, password, confirmation
+  - Validation forte (8 car., majuscule, minuscule, chiffre)
+  - Vérification correspondance mots de passe
+  - Messages d'erreur temps réel
+  - OAuth buttons (Google, Apple) préparés
+  - Redirection vers `/verify-email`
+  
+- ✅ **Page réinitialisation mot de passe (ForgotPasswordPage)**
+  - Formulaire email simple
+  - Page confirmation après envoi
+  - Instructions détaillées
+  - Bouton "Renvoyer l'email"
+  - Intégration `authService.resetPassword()`
+  
+- ✅ **Vérification email obligatoire (EmailVerificationPage)**
+  - Page d'attente après inscription
+  - Vérification automatique (polling 3s)
+  - Détection instantanée vérification
+  - Bouton renvoyer email
+  - Redirection auto vers `/welcome`
+  - Protection routes email non vérifié
+  
+- ✅ **Service authService.js amélioré**
+  - Méthode `sendVerificationEmail()`
+  - Méthode `isEmailVerified()`
+  - Méthode `reloadUser()`
+  - Envoi auto email après signup
+  - Logs détaillés debug
+  - Gestion erreurs complète
+  
+- ✅ **Router sécurisé**
+  - ProtectedRoute vérifie email
+  - Routes : `/signup`, `/forgot-password`, `/verify-email`
+  - Redirection auto si email non vérifié
+
+**Version 1.3.2 - Corrections Logout** 🔧
+- ✅ Correction redirection déconnexion (`/` → `/login`)
+- ✅ Correction Sidebar.jsx (utilisation directe `logout`)
+- ✅ Amélioration AppContext.jsx (`window.location.href`)
+- ✅ Correction noms fonctions services (`getAll()`)
+- ✅ Tests complets effectués
+
+**Version 1.3.1 - Page de Login Professionnelle** 🔐
+- ✅ Page de login moderne et responsive
+- ✅ Service d'authentification Firebase complet
+- ✅ Context d'authentification React
+- ✅ Routes protégées et publiques
+- ✅ Configuration router complète
+- ✅ 4 guides documentation (1100+ lignes)
+
+**Version 1.3.0 - Transformation Mobile** 📱
+- ✅ Intégration Capacitor
+- ✅ Configuration iOS
+- ✅ Configuration Android
+- ✅ Build mobile fonctionnel
+- ✅ App hybride native
+
+**Version 1.2.0 - Module Statistiques** 📊
+- ✅ Menu déroulant statistiques
+- ✅ 5 sous-pages statistiques
+- ✅ Graphiques et visualisations
+
+**Version 1.1.0 - Module Calendrier** 📅
+- ✅ Gestion des événements
+- ✅ Vue calendrier
+- ✅ CRUD matchs
+
+**Version 1.0.0 - MVP Complet** 🎉
+- ✅ Gestion clubs
+- ✅ Gestion équipes
+- ✅ Gestion joueurs
+- ✅ Dashboard principal
+- ✅ Sidebar navigation
+- ✅ Context API
+
+---
+
+## 🔄 Roadmap & Prochaines Étapes
+
+### ⏭️ Version 1.3.4 (Future)
+- [ ] **2FA (Authentification 2 facteurs)**
+  - Setup page avec QR code
+  - Vérification au login
+  - Nécessite plan Firebase Blaze
+- [ ] **OAuth Google fonctionnel**
+- [ ] **OAuth Apple fonctionnel**
+- [ ] **Captcha après X tentatives**
+- [ ] **Logs de connexion Firestore**
+- [ ] **Dashboard analytics connexions**
+
+### 📋 Backlog
+- [ ] Remember me fonctionnel
+- [ ] Mode hors ligne (PWA)
+- [ ] Notifications push
+- [ ] Export données (PDF, Excel)
+- [ ] Thème sombre
+- [ ] Internationalisation (i18n)
+
+---
+
+## 🏗️ Architecture du Projet
+
+### Structure des fichiers
+
+```
+src/
+├── pages/
+│   ├── LoginPage.jsx              # ✅ v1.3.1
+│   ├── SignupPage.jsx             # ✅ v1.3.3
+│   ├── ForgotPasswordPage.jsx     # ✅ v1.3.3
+│   ├── EmailVerificationPage.jsx # ✅ v1.3.3
+│   ├── DashboardPage.jsx
+│   ├── PlayersPage.jsx
+│   ├── CalendarPage.jsx
+│   └── statistics/
+│       ├── OverviewPage.jsx
+│       ├── PlayerStatsPage.jsx
+│       ├── EventStatsPage.jsx
+│       ├── RankingsPage.jsx
+│       └── ChartsPage.jsx
+├── components/
+│   ├── ui/                        # Composants réutilisables
+│   ├── layout/                    # Layout (Sidebar, Topbar)
+│   └── onboarding/                # Wizard onboarding
+├── services/
+│   ├── authService.js             # ✅ v1.3.3 (450+ lignes)
+│   └── firebase.js                # Config Firebase
+├── context/
+│   └── AppContext.jsx             # État global application
+├── router/
+│   └── index.jsx                  # ✅ v1.3.3 (routes sécurisées)
+└── utils/                         # Utilitaires
+```
+
+---
+
+## 🔐 Architecture Authentification (v1.3.3)
+
+### Flux complet
+
+```
+1. INSCRIPTION (/signup)
+   └─> SignupPage.jsx
+       │
+       ▼
+2. CRÉATION COMPTE
+   └─> authService.signup(email, password, name)
+       ├─> createUserWithEmailAndPassword()
+       ├─> updateProfile(displayName)
+       └─> sendVerificationEmail() ✨
+       │
+       ▼
+3. REDIRECTION
+   └─> navigate('/verify-email')
+       │
+       ▼
+4. VÉRIFICATION EMAIL
+   └─> EmailVerificationPage.jsx
+       ├─> Polling automatique (3s)
+       ├─> Détection vérification
+       └─> Bouton renvoyer email
+       │
+       ▼
+5. EMAIL VÉRIFIÉ
+   └─> navigate('/welcome')
+       │
+       ▼
+6. ONBOARDING
+   └─> Configuration club/équipe
+       │
+       ▼
+7. DASHBOARD
+   └─> Application complète
+```
+
+### Protection des routes
+
+```javascript
+// ProtectedRoute vérifie :
+1. Utilisateur connecté ?
+   ├─> Non → /login
+   └─> Oui → 2
+
+2. Email vérifié ?
+   ├─> Non → /verify-email
+   └─> Oui → Accès autorisé
+```
+
+---
+
+## 🔥 Configuration Firebase
+
+### Services activés
+- ✅ **Authentication**
+  - Email/Password ✅
+  - Google OAuth (préparé)
+  - Apple Sign In (préparé)
+- ✅ **Firestore Database**
+- ✅ **Hosting**
+- ✅ **Storage**
+
+### Templates email
+- ✅ Email verification
+- ✅ Password reset
+- ✅ Email change
+
+### Quotas (Plan Spark gratuit)
+- 100 emails/jour
+- 20K opérations Firestore/jour
+- 1 GB stockage
+
+---
+
+## 📦 Dépendances principales
+
+```json
+{
+  "react": "^18.2.0",
+  "react-router-dom": "^6.23.0",
+  "firebase": "^10.12.0",
+  "tailwindcss": "^3.4.0",
+  "@capacitor/core": "^5.0.0",
+  "@capacitor/ios": "^5.0.0",
+  "@capacitor/android": "^5.0.0"
+}
+```
+
+---
+
+## 🧪 Tests & Validation
+
+### Tests v1.3.3 effectués
+- ✅ Inscription nouveau compte
+- ✅ Validation formulaires
+- ✅ Envoi emails vérification
+- ✅ Réception emails
+- ✅ Vérification automatique
+- ✅ Renvoyer email
+- ✅ Reset password
+- ✅ Protection routes
+- ✅ Redirections correctes
+- ✅ Déconnexion
+- ✅ Messages d'erreur
+
+---
+
+## 📚 Documentation disponible
+
+### Guides v1.3.3
+- ✅ CHANGELOG complet
+- ✅ Guide configuration Firebase Email
+- ✅ Instructions troubleshooting
+- ✅ Contexte projet mis à jour
+
+### Guides v1.3.1
+- ✅ LOGIN_README.md (200+ lignes)
+- ✅ INTEGRATION_GUIDE.md (300+ lignes)
+- ✅ CHECKLIST.md (250+ lignes)
+- ✅ FIREBASE_CONFIG.md (350+ lignes)
+
+**Total documentation** : ~2000 lignes
+
+---
+
+## 🎯 Métriques du Projet
+
+**Code source** :
+- ~15,000 lignes de code React/JavaScript
+- 50+ composants
+- 15+ pages
+- 10+ services
+
+**Performance** :
+- First paint < 1s
+- Time to interactive < 2s
+- Bundle size ~200 KB gzip
+
+**Sécurité** :
+- Vérification email obligatoire ✅
+- Protection toutes routes ✅
+- Validation forte mots de passe ✅
+- Gestion erreurs complète ✅
+- Logs audit (préparé) ⏭️
+
+---
+
+## ⚠️ Notes importantes
+
+### Configuration requise
+1. **Firebase Console**
+   - Email/Password activé
+   - Templates configurés
+   - Domaines autorisés
+
+2. **Variables d'environnement**
+   ```env
+   VITE_FIREBASE_API_KEY=...
+   VITE_FIREBASE_AUTH_DOMAIN=...
+   VITE_FIREBASE_PROJECT_ID=...
+   VITE_FIREBASE_STORAGE_BUCKET=...
+   VITE_FIREBASE_MESSAGING_SENDER_ID=...
+   VITE_FIREBASE_APP_ID=...
+   ```
+
+3. **Quotas Firebase**
+   - Plan gratuit : 100 emails/jour
+   - Pour 2FA : nécessite plan Blaze
+
+### Limitations actuelles
+- 2FA non implémenté (nécessite plan payant)
+- OAuth Google/Apple non fonctionnels (configuration requise)
+- Remember me non implémenté
+- Captcha non implémenté
+
+---
+
+## 🚀 Démarrage rapide
+
+```bash
+# Installation
+npm install
+
+# Développement
+npm run dev
+
+# Build web
+npm run build
+
+# Build mobile iOS
+npx cap sync ios
+npx cap open ios
+
+# Build mobile Android
+npx cap sync android
+npx cap open android
+```
+
+---
+
+## 👥 Équipe & Contact
+
+**Développeur** : Raphaël Bouillaguet  
+**Email** : rbouillaguet@teamsphere.fr  
+**Version** : 1.3.3  
+**Statut** : ✅ Production ready (auth complet)
+
+---
+
+## 📝 Changelog rapide
+
+| Version | Date | Feature |
+|---------|------|---------|
+| 1.3.3 | 04/11/2025 | Signup + Forgot Password + Email Verification |
+| 1.3.2 | 03/11/2025 | Corrections fonction logout |
+| 1.3.1 | 03/11/2025 | Page login professionnelle |
+| 1.3.0 | 02/11/2025 | Transformation mobile Capacitor |
+| 1.2.0 | 30/10/2025 | Module statistiques |
+| 1.1.0 | 28/10/2025 | Module calendrier |
+| 1.0.0 | 26/10/2025 | MVP complet |
+
+---
+
+**TeamSphere v1.3.3 - Authentification complète et sécurisée 🔐✅**
